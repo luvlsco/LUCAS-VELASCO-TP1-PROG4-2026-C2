@@ -27,7 +27,6 @@ export class ScreeningForm {
 
   protected screeningForm = form(this.draft, (f) => {
     min(f.movieId, 1, { message: 'Elegí una película' });
-    min(f.roomId, 1, { message: 'Elegí una sala' });
     required(f.date, { message: 'La fecha es obligatoria' });
     required(f.time, { message: 'La hora es obligatoria' });
     required(f.format, { message: 'El formato es obligatorio' });
@@ -70,8 +69,25 @@ export class ScreeningForm {
     this.submitError.set(null);
     try {
       const id = this.screeningId();
-      if (id !== undefined) this.store.update(id, this.draft());
-      else this.store.add(this.draft());
+      const draft = this.draft();
+      let roomId = draft.roomId;
+      if (roomId === 0) {
+        const duration = this.catalog.find(draft.movieId)?.duration ?? 0;
+        const free = this.store.findFreeRoom(
+          draft.date,
+          draft.time,
+          duration,
+          id,
+          (movieId) => this.catalog.find(movieId)?.duration ?? 0,
+        );
+        if (free === undefined) {
+          this.submitError.set('Sin salas libres en ese horario.');
+          return;
+        }
+        roomId = free;
+      }
+      if (id !== undefined) this.store.update(id, { ...draft, roomId });
+      else this.store.add({ ...draft, roomId });
       await this.router.navigate(['/admin/funciones']);
     } finally {
       this.saving.set(false);

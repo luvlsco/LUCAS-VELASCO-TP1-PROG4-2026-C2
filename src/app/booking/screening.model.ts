@@ -18,6 +18,12 @@ export interface Screening {
 
 export type ScreeningDraft = Omit<Screening, 'id'>;
 
+export interface ScreeningSlot {
+  date: string;
+  time: string;
+  durationMin: number;
+}
+
 export function createEmptyScreeningDraft(): ScreeningDraft {
-  return { movieId: 0, roomId: 1, date: '', time: '', format: '2D', language: 'castellano' };
+  return { movieId: 0, roomId: 0, date: '', time: '', format: '2D', language: 'castellano' };
 }

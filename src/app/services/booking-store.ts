@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { Room, Screening, ScreeningDraft } from '../booking/screening.model';
+import { Room, Screening, ScreeningDraft, ScreeningSlot } from '../booking/screening.model';
 
 const ROOMS: Room[] = [
   { id: 1, name: 'Sala 1' },
@@ -40,5 +40,41 @@ export class BookingStore {
 
   remove(id: number): void {
     this.screenings.update((list) => list.filter((s) => s.id !== id));
+  }
+
+  overlaps(a: ScreeningSlot, b: ScreeningSlot): boolean {
+    if (a.date !== b.date) return false;
+    const start = (t: string): number => {
+      const [h, m] = t.split(':').map(Number);
+      return h * 60 + m;
+    };
+    const a0 = start(a.time);
+    const a1 = a0 + a.durationMin + 30;
+    const b0 = start(b.time);
+    const b1 = b0 + b.durationMin + 30;
+    return a0 < b1 && b0 < a1;
+  }
+
+  findFreeRoom(
+    date: string,
+    time: string,
+    durationMin: number,
+    excludeId: number | undefined,
+    durationOf: (movieId: number) => number,
+  ): number | undefined {
+    return this.rooms()
+      .map((r) => r.id)
+      .find(
+        (roomId) =>
+          !this.screenings().some(
+            (s) =>
+              s.id !== excludeId &&
+              s.roomId === roomId &&
+              this.overlaps(
+                { date, time, durationMin },
+                { date: s.date, time: s.time, durationMin: durationOf(s.movieId) },
+              ),
+          ),
+      );
   }
 }

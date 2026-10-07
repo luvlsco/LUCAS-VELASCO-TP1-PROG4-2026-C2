@@ -17,6 +17,7 @@
 
   <label for="room">Sala</label>
   <select id="room" [value]="draft().roomId" (change)="setRoom($any($event.target).value)">
+    <option [value]="0">Automática</option>
     @for (r of store.rooms(); track r.id) {
       <option [value]="r.id">{{ r.name }}</option>
     }
