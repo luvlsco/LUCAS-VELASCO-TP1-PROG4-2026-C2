@@ -23,6 +23,19 @@ export class BookingStore {
     return this.occupied()[screeningId]?.includes(seatId) ?? false;
   }
 
+  readonly selected = signal<string[]>([]);
+
+  toggleSeat(screeningId: number, id: string): void {
+    if (this.isOccupied(screeningId, id)) return;
+    this.selected.update((list) =>
+      list.includes(id) ? list.filter((s) => s !== id) : [...list, id],
+    );
+  }
+
+  clearSelection(): void {
+    this.selected.set([]);
+  }
+
   forMovie(movieId: number): Screening[] {
     return this.screenings().filter((s) => s.movieId === movieId);
   }

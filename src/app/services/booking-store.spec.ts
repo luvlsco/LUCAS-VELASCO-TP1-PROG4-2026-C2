@@ -76,4 +76,17 @@ describe('BookingStore', () => {
       store.conflicts(1, { date: '2026-10-10', time: '19:00', durationMin: 90 }, 1, durationOf),
     ).toBe(false);
   });
+
+  it('alterna selección e ignora ocupadas', () => {
+    const store = new BookingStore();
+    store.toggleSeat(1, 'A3');
+    expect(store.selected()).toEqual(['A3']);
+    store.toggleSeat(1, 'A3');
+    expect(store.selected()).toEqual([]);
+    store.toggleSeat(1, 'A1');
+    expect(store.selected()).toEqual([]);
+    store.toggleSeat(1, 'A3');
+    store.clearSelection();
+    expect(store.selected()).toEqual([]);
+  });
 });

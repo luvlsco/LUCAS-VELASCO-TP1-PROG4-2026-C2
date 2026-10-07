@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildRoomSeats, seatId, seatPrice } from './seat.model';
+import { areContiguous, buildRoomSeats, seatId, seatPrice } from './seat.model';
 
 describe('buildRoomSeats', () => {
   const seats = buildRoomSeats();
@@ -34,5 +34,14 @@ describe('buildRoomSeats', () => {
     expect(seatId({ row: 'J', number: 5 })).toBe('J5');
     expect(seatPrice({ row: 'R', number: 1, block: 1, kind: 'vip' }, 5000)).toBe(7500);
     expect(seatPrice({ row: 'A', number: 1, block: 0, kind: 'standard' }, 5000)).toBe(5000);
+  });
+
+  it('valida contigüidad', () => {
+    expect(areContiguous([])).toBe(true);
+    expect(areContiguous(['A5'])).toBe(true);
+    expect(areContiguous(['A5', 'A6', 'A7'])).toBe(true);
+    expect(areContiguous(['A7', 'A5', 'A6'])).toBe(true);
+    expect(areContiguous(['A5', 'A7'])).toBe(false);
+    expect(areContiguous(['A5', 'B5'])).toBe(false);
   });
 });

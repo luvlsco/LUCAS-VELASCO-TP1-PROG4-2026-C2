@@ -2,7 +2,7 @@ import { Component, computed, inject, input, numberAttribute } from '@angular/co
 import { RouterLink } from '@angular/router';
 import { BookingStore } from '../../services/booking-store';
 import { CatalogStore } from '../../services/catalog-store';
-import { Seat, buildRoomSeats, seatId } from '../seat.model';
+import { Seat, areContiguous, buildRoomSeats, seatId } from '../seat.model';
 
 @Component({
   selector: 'app-seat-map',
@@ -41,7 +41,22 @@ export class SeatMap {
     return this.store.isOccupied(this.screeningId() ?? -1, seatId(seat));
   }
 
+  protected isSelected(seat: Seat): boolean {
+    return this.store.selected().includes(seatId(seat));
+  }
+
+  protected toggle(seat: Seat): void {
+    this.store.toggleSeat(this.screeningId() ?? -1, seatId(seat));
+  }
+
+  protected contiguous(): boolean {
+    return areContiguous(this.store.selected());
+  }
+
   protected seatClass(seat: Seat): string {
-    return `seat ${seat.kind}${this.occupied(seat) ? ' taken' : ''}`;
+    const classes = ['seat', seat.kind];
+    if (this.occupied(seat)) classes.push('taken');
+    if (this.isSelected(seat)) classes.push('selected');
+    return classes.join(' ');
   }
 }

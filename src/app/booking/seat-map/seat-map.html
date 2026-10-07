@@ -6,11 +6,15 @@
     <div class="row">
       <span>{{ row[0] }}</span>
       @for (seat of row[1]; track seat.number) {
-        <button type="button" [class]="seatClass(seat)" [disabled]="occupied(seat)">
+        <button type="button" [class]="seatClass(seat)" [disabled]="occupied(seat)" (click)="toggle(seat)">
           {{ seat.number }}
         </button>
       }
     </div>
+  }
+
+  @if (store.selected().length > 1 && !contiguous()) {
+    <p class="error">Elegí butacas contiguas.</p>
   }
 
   <p>Normal · Accesible · VIP · Ocupada</p>

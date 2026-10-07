@@ -42,3 +42,11 @@ export function seatId(seat: Pick<Seat, 'row' | 'number'>): string {
 export function seatPrice(seat: Seat, basePrice: number): number {
   return seat.kind === 'vip' ? Math.round(basePrice * VIP_MULTIPLIER) : basePrice;
 }
+
+export function areContiguous(ids: string[]): boolean {
+  if (ids.length <= 1) return true;
+  const rows = ids.map((id) => id.replace(/[0-9]/g, ''));
+  if (!rows.every((row) => row === rows[0])) return false;
+  const numbers = ids.map((id) => Number(id.replace(/[^0-9]/g, ''))).sort((a, b) => a - b);
+  return numbers.every((n, i) => i === 0 || n === numbers[i - 1] + 1);
+}
