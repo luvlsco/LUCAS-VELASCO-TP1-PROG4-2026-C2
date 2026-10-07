@@ -19,10 +19,19 @@ export interface Movie {
   duration: number;
   genres: string[];
   ageRating: AgeRating;
+  featured: boolean;
 }
 
 export type MovieDraft = Omit<Movie, 'id'>;
 
 export function createEmptyMovieDraft(): MovieDraft {
-  return { title: '', image: '', synopsis: '', duration: 90, genres: [], ageRating: 'libre' };
+  return {
+    title: '',
+    image: '',
+    synopsis: '',
+    duration: 90,
+    genres: [],
+    ageRating: 'libre',
+    featured: false,
+  };
 }

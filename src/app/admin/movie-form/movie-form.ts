@@ -62,6 +62,7 @@ export class MovieForm {
           duration: found.duration,
           genres: [...found.genres],
           ageRating: found.ageRating,
+          featured: found.featured,
         });
       }
     });

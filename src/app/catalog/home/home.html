@@ -1,1 +1,12 @@
-<p>home works!</p>
+<h2>Destacadas</h2>
+
+@if (store.featured().length === 0) {
+  <p>No hay películas destacadas.</p>
+} @else {
+  @for (m of store.featured(); track m.id) {
+    <article>
+      <img [src]="m.image" [alt]="m.title" width="120" />
+      <h3>{{ m.title }}</h3>
+    </article>
+  }
+}

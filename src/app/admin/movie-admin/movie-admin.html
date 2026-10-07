@@ -1,0 +1,20 @@
+<h2>Películas</h2>
+<a routerLink="/admin/peliculas/nueva">Nueva película</a>
+
+@for (m of store.movies(); track m.id) {
+  <article>
+    <img [src]="m.image" [alt]="m.title" width="60" />
+    <h3>{{ m.title }}</h3>
+    <label>
+      <input
+        type="checkbox"
+        [checked]="m.featured"
+        (change)="store.toggleFeatured(m.id)"
+      />
+      En principal
+    </label>
+    <a [routerLink]="['/admin/peliculas', m.id, 'editar']">Editar</a>
+  </article>
+} @empty {
+  <p>No hay películas.</p>
+}

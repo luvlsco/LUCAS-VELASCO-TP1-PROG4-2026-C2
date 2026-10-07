@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, computed, signal } from '@angular/core';
 import { Movie, MovieDraft } from '../catalog/movie.model';
 
 // mock en memoria; datos reales en S3
@@ -12,6 +12,7 @@ const MOVIE_MOCK: Movie[] = [
     duration: 175,
     genres: ['Crimen', 'Drama'],
     ageRating: '18',
+    featured: true,
   },
   {
     id: 2,
@@ -21,6 +22,7 @@ const MOVIE_MOCK: Movie[] = [
     duration: 116,
     genres: ['Ciencia ficción', 'Aventura', 'Comedia'],
     ageRating: 'libre',
+    featured: true,
   },
   {
     id: 3,
@@ -30,6 +32,7 @@ const MOVIE_MOCK: Movie[] = [
     duration: 194,
     genres: ['Drama', 'Romance'],
     ageRating: '13',
+    featured: false,
   },
   {
     id: 4,
@@ -39,6 +42,7 @@ const MOVIE_MOCK: Movie[] = [
     duration: 136,
     genres: ['Ciencia ficción', 'Acción'],
     ageRating: '13',
+    featured: true,
   },
   {
     id: 5,
@@ -48,12 +52,14 @@ const MOVIE_MOCK: Movie[] = [
     duration: 155,
     genres: ['Acción', 'Drama', 'Aventura'],
     ageRating: '13',
+    featured: false,
   },
 ];
 
 @Injectable({ providedIn: 'root' })
 export class CatalogStore {
   readonly movies = signal<Movie[]>(MOVIE_MOCK);
+  readonly featured = computed(() => this.movies().filter((m) => m.featured));
 
   find(id: number): Movie | undefined {
     return this.movies().find((m) => m.id === id);
@@ -68,5 +74,9 @@ export class CatalogStore {
 
   update(id: number, patch: MovieDraft): void {
     this.movies.update((list) => list.map((m) => (m.id === id ? { ...patch, id } : m)));
+  }
+
+  toggleFeatured(id: number): void {
+    this.movies.update((list) => list.map((m) => (m.id === id ? { ...m, featured: !m.featured } : m)));
   }
 }

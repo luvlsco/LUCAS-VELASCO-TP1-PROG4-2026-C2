@@ -12,6 +12,7 @@ describe('CatalogStore', () => {
       duration: 120,
       genres: ['Drama'],
       ageRating: 'libre',
+      featured: false,
     };
     const created = store.add(draft);
     expect(created.id).toBeGreaterThan(0);
@@ -27,8 +28,18 @@ describe('CatalogStore', () => {
       duration: 100,
       genres: ['Acción'],
       ageRating: '13',
+      featured: true,
     });
     expect(store.find(1)?.title).toBe('Editada');
     expect(store.find(1)?.genres).toEqual(['Acción']);
+  });
+
+  it('filtra destacadas y alterna con toggle', () => {
+    const store = new CatalogStore();
+    expect(store.featured().length).toBe(3);
+    store.toggleFeatured(3);
+    expect(store.featured().length).toBe(4);
+    store.toggleFeatured(1);
+    expect(store.featured().length).toBe(3);
   });
 });
