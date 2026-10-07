@@ -2,8 +2,10 @@
 
 @for (m of store.top3(); track m.id) {
   <article>
-    <img [src]="m.image" [alt]="m.title" width="120" />
-    <h3>{{ m.title }}</h3>
+    <a [routerLink]="['/peliculas', m.id]">
+      <img [src]="m.image" [alt]="m.title" width="120" />
+      <h3>{{ m.title }}</h3>
+    </a>
     <p>{{ m.soldTickets }} entradas</p>
   </article>
 }
@@ -15,8 +17,10 @@
 } @else {
   @for (m of store.featured(); track m.id) {
     <article>
-      <img [src]="m.image" [alt]="m.title" width="120" />
-      <h3>{{ m.title }}</h3>
+      <a [routerLink]="['/peliculas', m.id]">
+        <img [src]="m.image" [alt]="m.title" width="120" />
+        <h3>{{ m.title }}</h3>
+      </a>
     </article>
   }
 }
