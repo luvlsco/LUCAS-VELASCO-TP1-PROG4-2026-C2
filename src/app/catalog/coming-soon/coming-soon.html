@@ -5,6 +5,9 @@
     <img [src]="m.image" [alt]="m.title" width="120" />
     <h3>{{ m.title }}</h3>
     <p>Estreno: {{ m.releaseDate }}</p>
+    <button type="button" (click)="alerts.toggle(m.id)">
+      {{ alerts.has(m.id) ? 'Alerta activada' : 'Avísame' }}
+    </button>
   </article>
 } @empty {
   <p>Sin próximos estrenos.</p>
