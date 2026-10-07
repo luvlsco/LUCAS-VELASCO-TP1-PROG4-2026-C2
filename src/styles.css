@@ -1,1 +1,79 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  color-scheme: light;
+  --bg: #141118;
+  --card: #1f1a24;
+  --text: #f2edf5;
+  --muted: #b9aec4;
+  --accent: #e0a100;
+  --error: #e5484d;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, sans-serif;
+}
+
+main, app-root > :not(nav) {
+  padding: 1rem;
+  max-width: 60rem;
+  margin: 0 auto;
+}
+
+nav {
+  display: flex;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: #0d0b0f;
+}
+
+nav a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+nav a:hover {
+  color: var(--accent);
+}
+
+article {
+  background: var(--card);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+article img {
+  border-radius: 0.25rem;
+  display: block;
+  max-width: 100%;
+}
+
+article a {
+  color: inherit;
+  text-decoration: none;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 28rem;
+}
+
+input, select, textarea, button {
+  font: inherit;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--muted);
+}
+
+button, input[type='submit'] {
+  cursor: pointer;
+}
+
+.error {
+  color: var(--error);
+  margin: 0.25rem 0;
+}
