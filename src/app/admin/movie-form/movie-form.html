@@ -70,6 +70,15 @@
     }
   }
 
+  <label for="releaseDate">Fecha de estreno</label>
+  <input id="releaseDate" type="date" [formField]="movieForm.releaseDate" />
+  @let fr = movieForm.releaseDate();
+  @if (fr.touched() && !fr.valid()) {
+    @for (e of fr.errors(); track e.kind) {
+      <p class="error">{{ e.message }}</p>
+    }
+  }
+
   @if (submitError(); as error) {
     <p class="error" role="alert">{{ error }}</p>
   }

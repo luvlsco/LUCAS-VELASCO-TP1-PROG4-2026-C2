@@ -1,9 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { CatalogStore } from '../../services/catalog-store';
 
 @Component({
-  imports: [],
   selector: 'app-coming-soon',
-  styleUrl: './coming-soon.css',
+  imports: [],
   templateUrl: './coming-soon.html',
 })
-export class ComingSoon {}
+export class ComingSoon {
+  protected readonly store = inject(CatalogStore);
+}

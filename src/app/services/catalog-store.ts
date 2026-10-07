@@ -2,6 +2,9 @@ import { Injectable, computed, signal } from '@angular/core';
 import { Movie, MovieDraft } from '../catalog/movie.model';
 
 // mock en memoria; datos reales en S3
+const DAY = 86400000;
+const iso = (days: number): string => new Date(Date.now() + days * DAY).toISOString().slice(0, 10);
+
 const MOVIE_MOCK: Movie[] = [
   {
     id: 1,
@@ -14,6 +17,7 @@ const MOVIE_MOCK: Movie[] = [
     ageRating: '18',
     featured: true,
     soldTickets: 1800,
+    releaseDate: iso(-60),
   },
   {
     id: 2,
@@ -25,6 +29,7 @@ const MOVIE_MOCK: Movie[] = [
     ageRating: 'libre',
     featured: true,
     soldTickets: 900,
+    releaseDate: iso(-30),
   },
   {
     id: 3,
@@ -36,6 +41,7 @@ const MOVIE_MOCK: Movie[] = [
     ageRating: '13',
     featured: false,
     soldTickets: 2300,
+    releaseDate: iso(-10),
   },
   {
     id: 4,
@@ -47,6 +53,7 @@ const MOVIE_MOCK: Movie[] = [
     ageRating: '13',
     featured: true,
     soldTickets: 1500,
+    releaseDate: iso(10),
   },
   {
     id: 5,
@@ -58,6 +65,7 @@ const MOVIE_MOCK: Movie[] = [
     ageRating: '13',
     featured: false,
     soldTickets: 1200,
+    releaseDate: iso(35),
   },
 ];
 
@@ -68,6 +76,10 @@ export class CatalogStore {
   readonly top3 = computed(() =>
     [...this.movies()].sort((a, b) => b.soldTickets - a.soldTickets).slice(0, 3),
   );
+  readonly comingSoon = computed(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    return this.movies().filter((m) => m.releaseDate > today);
+  });
   readonly query = signal('');
   readonly genre = signal('');
   readonly filtered = computed(() => {    const q = this.query().toLowerCase();

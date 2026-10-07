@@ -14,6 +14,7 @@ describe('CatalogStore', () => {
       ageRating: 'libre',
       featured: false,
       soldTickets: 0,
+      releaseDate: '2026-01-01',
     };
     const created = store.add(draft);
     expect(created.id).toBeGreaterThan(0);
@@ -31,6 +32,7 @@ describe('CatalogStore', () => {
       ageRating: '13',
       featured: true,
       soldTickets: 10,
+      releaseDate: '2026-01-01',
     });
     expect(store.find(1)?.title).toBe('Editada');
     expect(store.find(1)?.genres).toEqual(['Acción']);
@@ -63,8 +65,14 @@ describe('CatalogStore', () => {
       ageRating: 'libre',
       featured: false,
       soldTickets: 0,
+      releaseDate: '2026-01-01',
     });
     expect(store.top3().map((m) => m.title)).toEqual(['Titanic', 'El Padrino', 'Matrix']);
+  });
+
+  it('filtra próximos estrenos', () => {
+    const store = new CatalogStore();
+    expect(store.comingSoon().map((m) => m.title)).toEqual(['Matrix', 'Gladiador']);
   });
 
   it('filtra destacadas y alterna con toggle', () => {

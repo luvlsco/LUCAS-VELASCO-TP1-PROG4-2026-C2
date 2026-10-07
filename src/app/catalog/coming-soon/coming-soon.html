@@ -1,1 +1,11 @@
-<p>coming-soon works!</p>
+<h2>Próximamente</h2>
+
+@for (m of store.comingSoon(); track m.id) {
+  <article>
+    <img [src]="m.image" [alt]="m.title" width="120" />
+    <h3>{{ m.title }}</h3>
+    <p>Estreno: {{ m.releaseDate }}</p>
+  </article>
+} @empty {
+  <p>Sin próximos estrenos.</p>
+}

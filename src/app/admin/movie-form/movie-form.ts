@@ -47,6 +47,7 @@ export class MovieForm {
     max(f.duration, 600, { message: 'Máximo 600 minutos' });
     minLength(f.genres, 1, { message: 'Elegí al menos un género' });
     required(f.ageRating, { message: 'La edad es obligatoria' });
+    required(f.releaseDate, { message: 'La fecha de estreno es obligatoria' });
   });
 
   constructor() {
@@ -64,6 +65,7 @@ export class MovieForm {
           ageRating: found.ageRating,
           featured: found.featured,
           soldTickets: found.soldTickets,
+          releaseDate: found.releaseDate,
         });
       }
     });
