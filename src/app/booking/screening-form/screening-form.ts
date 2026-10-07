@@ -70,21 +70,22 @@ export class ScreeningForm {
     try {
       const id = this.screeningId();
       const draft = this.draft();
+      const durationOf = (movieId: number): number =>
+        this.catalog.find(movieId)?.duration ?? 0;
       let roomId = draft.roomId;
       if (roomId === 0) {
         const duration = this.catalog.find(draft.movieId)?.duration ?? 0;
-        const free = this.store.findFreeRoom(
-          draft.date,
-          draft.time,
-          duration,
-          id,
-          (movieId) => this.catalog.find(movieId)?.duration ?? 0,
-        );
+        const free = this.store.findFreeRoom(draft.date, draft.time, duration, id, durationOf);
         if (free === undefined) {
           this.submitError.set('Sin salas libres en ese horario.');
           return;
         }
         roomId = free;
+      }
+      const duration = this.catalog.find(draft.movieId)?.duration ?? 0;
+      if (this.store.conflicts(roomId, { date: draft.date, time: draft.time, durationMin: duration }, id, durationOf)) {
+        this.submitError.set('La sala está ocupada en ese horario (30 min entre funciones).');
+        return;
       }
       if (id !== undefined) this.store.update(id, { ...draft, roomId });
       else this.store.add({ ...draft, roomId });

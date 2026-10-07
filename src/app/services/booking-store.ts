@@ -55,6 +55,20 @@ export class BookingStore {
     return a0 < b1 && b0 < a1;
   }
 
+  conflicts(
+    roomId: number,
+    slot: ScreeningSlot,
+    excludeId: number | undefined,
+    durationOf: (movieId: number) => number,
+  ): boolean {
+    return this.screenings().some(
+      (s) =>
+        s.id !== excludeId &&
+        s.roomId === roomId &&
+        this.overlaps(slot, { date: s.date, time: s.time, durationMin: durationOf(s.movieId) }),
+    );
+  }
+
   findFreeRoom(
     date: string,
     time: string,
