@@ -4,6 +4,12 @@
   <p>{{ m.synopsis }}</p>
   <p>{{ m.duration }} min · {{ m.ageRating }} · {{ m.genres.join(', ') }}</p>
 
+  @if (store.enPreventa(m)) {
+    <p>Preventa: ${{ store.precioVigente(m) }} (normal ${{ m.price }})</p>
+  } @else {
+    <p>Precio: ${{ store.precioVigente(m) }}</p>
+  }
+
   @if (reviews.count(m.id) === 0) {
     <p>Sin reseñas todavía.</p>
   } @else {

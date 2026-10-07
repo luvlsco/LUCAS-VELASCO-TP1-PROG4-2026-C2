@@ -48,6 +48,8 @@ export class MovieForm {
     minLength(f.genres, 1, { message: 'Elegí al menos un género' });
     required(f.ageRating, { message: 'La edad es obligatoria' });
     required(f.releaseDate, { message: 'La fecha de estreno es obligatoria' });
+    min(f.presalePrice, 0, { message: 'Mínimo 0' });
+    min(f.price, 0, { message: 'Mínimo 0' });
   });
 
   constructor() {
@@ -66,6 +68,8 @@ export class MovieForm {
           featured: found.featured,
           soldTickets: found.soldTickets,
           releaseDate: found.releaseDate,
+          presalePrice: found.presalePrice,
+          price: found.price,
         });
       }
     });

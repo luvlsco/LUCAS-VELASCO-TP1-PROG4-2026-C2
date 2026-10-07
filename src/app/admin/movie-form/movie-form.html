@@ -79,6 +79,24 @@
     }
   }
 
+  <label for="presalePrice">Precio preventa</label>
+  <input id="presalePrice" type="number" [formField]="movieForm.presalePrice" />
+  @let fp = movieForm.presalePrice();
+  @if (fp.touched() && !fp.valid()) {
+    @for (e of fp.errors(); track e.kind) {
+      <p class="error">{{ e.message }}</p>
+    }
+  }
+
+  <label for="price">Precio normal</label>
+  <input id="price" type="number" [formField]="movieForm.price" />
+  @let fpr = movieForm.price();
+  @if (fpr.touched() && !fpr.valid()) {
+    @for (e of fpr.errors(); track e.kind) {
+      <p class="error">{{ e.message }}</p>
+    }
+  }
+
   @if (submitError(); as error) {
     <p class="error" role="alert">{{ error }}</p>
   }

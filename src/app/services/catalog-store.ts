@@ -18,6 +18,8 @@ const MOVIE_MOCK: Movie[] = [
     featured: true,
     soldTickets: 1800,
     releaseDate: iso(-60),
+    presalePrice: 3500,
+    price: 5000,
   },
   {
     id: 2,
@@ -30,6 +32,8 @@ const MOVIE_MOCK: Movie[] = [
     featured: true,
     soldTickets: 900,
     releaseDate: iso(-30),
+    presalePrice: 3000,
+    price: 4500,
   },
   {
     id: 3,
@@ -42,6 +46,8 @@ const MOVIE_MOCK: Movie[] = [
     featured: false,
     soldTickets: 2300,
     releaseDate: iso(-10),
+    presalePrice: 3500,
+    price: 5000,
   },
   {
     id: 4,
@@ -53,7 +59,9 @@ const MOVIE_MOCK: Movie[] = [
     ageRating: '13',
     featured: true,
     soldTickets: 1500,
-    releaseDate: iso(10),
+    releaseDate: iso(5),
+    presalePrice: 3200,
+    price: 4800,
   },
   {
     id: 5,
@@ -66,6 +74,8 @@ const MOVIE_MOCK: Movie[] = [
     featured: false,
     soldTickets: 1200,
     releaseDate: iso(35),
+    presalePrice: 3500,
+    price: 5000,
   },
 ];
 
@@ -80,6 +90,15 @@ export class CatalogStore {
     const today = new Date().toISOString().slice(0, 10);
     return this.movies().filter((m) => m.releaseDate > today);
   });
+
+  enPreventa(movie: Movie): boolean {
+    const days = (new Date(movie.releaseDate).getTime() - Date.now()) / DAY;
+    return days >= 0 && days <= 7;
+  }
+
+  precioVigente(movie: Movie): number {
+    return this.enPreventa(movie) ? movie.presalePrice : movie.price;
+  }
   readonly query = signal('');
   readonly genre = signal('');
   readonly filtered = computed(() => {    const q = this.query().toLowerCase();

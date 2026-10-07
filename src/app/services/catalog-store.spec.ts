@@ -15,6 +15,8 @@ describe('CatalogStore', () => {
       featured: false,
       soldTickets: 0,
       releaseDate: '2026-01-01',
+      presalePrice: 3000,
+      price: 5000,
     };
     const created = store.add(draft);
     expect(created.id).toBeGreaterThan(0);
@@ -33,6 +35,8 @@ describe('CatalogStore', () => {
       featured: true,
       soldTickets: 10,
       releaseDate: '2026-01-01',
+      presalePrice: 3000,
+      price: 5000,
     });
     expect(store.find(1)?.title).toBe('Editada');
     expect(store.find(1)?.genres).toEqual(['Acción']);
@@ -66,6 +70,8 @@ describe('CatalogStore', () => {
       featured: false,
       soldTickets: 0,
       releaseDate: '2026-01-01',
+      presalePrice: 3000,
+      price: 5000,
     });
     expect(store.top3().map((m) => m.title)).toEqual(['Titanic', 'El Padrino', 'Matrix']);
   });
@@ -73,6 +79,30 @@ describe('CatalogStore', () => {
   it('filtra próximos estrenos', () => {
     const store = new CatalogStore();
     expect(store.comingSoon().map((m) => m.title)).toEqual(['Matrix', 'Gladiador']);
+  });
+
+  it('calcula preventa y precio vigente', () => {
+    const store = new CatalogStore();
+    const iso = (days: number): string =>
+      new Date(Date.now() + days * 86400000).toISOString().slice(0, 10);
+    const base = {
+      title: 'X',
+      image: 'https://img.test/x.jpg',
+      synopsis: 'Sinopsis con más de diez caracteres.',
+      duration: 90,
+      genres: ['Drama'],
+      ageRating: 'libre' as const,
+      featured: false,
+      soldTickets: 0,
+      presalePrice: 3000,
+      price: 5000,
+    };
+    expect(store.enPreventa({ ...base, id: 1, releaseDate: iso(5) })).toBe(true);
+    expect(store.precioVigente({ ...base, id: 1, releaseDate: iso(5) })).toBe(3000);
+    expect(store.enPreventa({ ...base, id: 2, releaseDate: iso(35) })).toBe(false);
+    expect(store.precioVigente({ ...base, id: 2, releaseDate: iso(35) })).toBe(5000);
+    expect(store.enPreventa({ ...base, id: 3, releaseDate: iso(-10) })).toBe(false);
+    expect(store.precioVigente({ ...base, id: 3, releaseDate: iso(-10) })).toBe(5000);
   });
 
   it('filtra destacadas y alterna con toggle', () => {

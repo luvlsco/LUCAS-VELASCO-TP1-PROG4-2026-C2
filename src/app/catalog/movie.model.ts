@@ -22,6 +22,8 @@ export interface Movie {
   featured: boolean;
   soldTickets: number;
   releaseDate: string;
+  presalePrice: number;
+  price: number;
 }
 
 export type MovieDraft = Omit<Movie, 'id'>;
@@ -37,5 +39,7 @@ export function createEmptyMovieDraft(): MovieDraft {
     featured: false,
     soldTickets: 0,
     releaseDate: '',
+    presalePrice: 0,
+    price: 0,
   };
 }
