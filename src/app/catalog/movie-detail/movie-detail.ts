@@ -11,6 +11,7 @@ import {
   required,
 } from '@angular/forms/signals';
 import { CatalogStore } from '../../services/catalog-store';
+import { BookingStore } from '../../services/booking-store';
 import { ReviewStore } from '../../services/review-store';
 
 @Component({
@@ -20,6 +21,7 @@ import { ReviewStore } from '../../services/review-store';
 })
 export class MovieDetail {
   protected readonly store = inject(CatalogStore);
+  protected readonly booking = inject(BookingStore);
   protected readonly reviews = inject(ReviewStore);
 
   movieId = input<number | undefined, unknown>(undefined, {

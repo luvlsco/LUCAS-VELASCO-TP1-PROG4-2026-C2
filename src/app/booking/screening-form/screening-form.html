@@ -1,1 +1,67 @@
-<p>screening-form works!</p>
+<h2>{{ screeningId() ? 'Editar función' : 'Nueva función' }}</h2>
+
+<form [formRoot]="screeningForm" (submit)="$event.preventDefault(); save()">
+  <label for="movie">Película</label>
+  <select id="movie" [value]="draft().movieId" (change)="setMovie($any($event.target).value)">
+    <option [value]="0">Elegí…</option>
+    @for (m of catalog.movies(); track m.id) {
+      <option [value]="m.id">{{ m.title }}</option>
+    }
+  </select>
+  @let fm = screeningForm.movieId();
+  @if ((fm.touched() || submitted()) && !fm.valid()) {
+    @for (e of fm.errors(); track e.kind) {
+      <p class="error">{{ e.message }}</p>
+    }
+  }
+
+  <label for="room">Sala</label>
+  <select id="room" [value]="draft().roomId" (change)="setRoom($any($event.target).value)">
+    @for (r of store.rooms(); track r.id) {
+      <option [value]="r.id">{{ r.name }}</option>
+    }
+  </select>
+
+  <label for="date">Fecha</label>
+  <input id="date" type="date" [formField]="screeningForm.date" />
+  @let fd = screeningForm.date();
+  @if (fd.touched() && !fd.valid()) {
+    @for (e of fd.errors(); track e.kind) {
+      <p class="error">{{ e.message }}</p>
+    }
+  }
+
+  <label for="time">Hora</label>
+  <input id="time" type="time" [formField]="screeningForm.time" />
+  @let ft = screeningForm.time();
+  @if (ft.touched() && !ft.valid()) {
+    @for (e of ft.errors(); track e.kind) {
+      <p class="error">{{ e.message }}</p>
+    }
+  }
+
+  <label for="format">Formato</label>
+  <select id="format" [formField]="screeningForm.format">
+    <option value="2D">2D</option>
+    <option value="3D">3D</option>
+    <option value="4D">4D</option>
+    <option value="5D">5D</option>
+  </select>
+
+  <label for="language">Idioma</label>
+  <select id="language" [formField]="screeningForm.language">
+    <option value="castellano">Castellano</option>
+    <option value="subtitulada">Subtitulada</option>
+  </select>
+
+  @if (submitError(); as error) {
+    <p class="error" role="alert">{{ error }}</p>
+  }
+
+  <div class="actions">
+    <button type="submit" [disabled]="saving()">
+      {{ saving() ? 'Guardando...' : 'Guardar función' }}
+    </button>
+    <a routerLink="/admin/funciones">Cancelar</a>
+  </div>
+</form>

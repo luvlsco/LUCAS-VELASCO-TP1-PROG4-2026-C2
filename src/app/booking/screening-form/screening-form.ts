@@ -1,9 +1,80 @@
-import { Component } from '@angular/core';
+import { Component, effect, inject, input, numberAttribute, signal } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { FormField, FormRoot, form, min, required } from '@angular/forms/signals';
+import { BookingStore } from '../../services/booking-store';
+import { CatalogStore } from '../../services/catalog-store';
+import { ScreeningDraft, createEmptyScreeningDraft } from '../screening.model';
 
 @Component({
-  imports: [],
   selector: 'app-screening-form',
-  styleUrl: './screening-form.css',
+  imports: [FormField, FormRoot, RouterLink],
   templateUrl: './screening-form.html',
 })
-export class ScreeningForm {}
+export class ScreeningForm {
+  protected readonly catalog = inject(CatalogStore);
+  protected readonly store = inject(BookingStore);
+  private readonly router = inject(Router);
+
+  screeningId = input<number | undefined, unknown>(undefined, {
+    transform: (value) =>
+      value === undefined || value === null || value === '' ? undefined : numberAttribute(value),
+  });
+
+  protected draft = signal<ScreeningDraft>(createEmptyScreeningDraft());
+  protected saving = signal(false);
+  protected submitted = signal(false);
+  protected submitError = signal<string | null>(null);
+
+  protected screeningForm = form(this.draft, (f) => {
+    min(f.movieId, 1, { message: 'Elegí una película' });
+    min(f.roomId, 1, { message: 'Elegí una sala' });
+    required(f.date, { message: 'La fecha es obligatoria' });
+    required(f.time, { message: 'La hora es obligatoria' });
+    required(f.format, { message: 'El formato es obligatorio' });
+    required(f.language, { message: 'El idioma es obligatorio' });
+  });
+
+  constructor() {
+    effect(() => {
+      const id = this.screeningId();
+      if (!id) return;
+      const found = this.store.screenings().find((s) => s.id === id);
+      if (found) {
+        this.draft.set({
+          movieId: found.movieId,
+          roomId: found.roomId,
+          date: found.date,
+          time: found.time,
+          format: found.format,
+          language: found.language,
+        });
+      }
+    });
+  }
+
+  protected setMovie(value: string): void {
+    this.draft.update((d) => ({ ...d, movieId: Number(value) }));
+  }
+
+  protected setRoom(value: string): void {
+    this.draft.update((d) => ({ ...d, roomId: Number(value) }));
+  }
+
+  protected async save(): Promise<void> {
+    this.submitted.set(true);
+    if (!this.screeningForm().valid()) {
+      this.submitError.set('Revisá los campos marcados.');
+      return;
+    }
+    this.saving.set(true);
+    this.submitError.set(null);
+    try {
+      const id = this.screeningId();
+      if (id !== undefined) this.store.update(id, this.draft());
+      else this.store.add(this.draft());
+      await this.router.navigate(['/admin/funciones']);
+    } finally {
+      this.saving.set(false);
+    }
+  }
+}

@@ -10,6 +10,13 @@
     <p>Precio: ${{ store.precioVigente(m) }}</p>
   }
 
+  <h3>Funciones</h3>
+  @for (s of booking.forMovie(m.id); track s.id) {
+    <p>{{ s.date }} {{ s.time }} · {{ booking.roomName(s.roomId) }} · {{ s.format }} · {{ s.language }}</p>
+  } @empty {
+    <p>Sin funciones programadas.</p>
+  }
+
   @if (reviews.count(m.id) === 0) {
     <p>Sin reseñas todavía.</p>
   } @else {
