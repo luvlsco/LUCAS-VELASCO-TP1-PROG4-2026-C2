@@ -60,6 +60,15 @@ const MOVIE_MOCK: Movie[] = [
 export class CatalogStore {
   readonly movies = signal<Movie[]>(MOVIE_MOCK);
   readonly featured = computed(() => this.movies().filter((m) => m.featured));
+  readonly query = signal('');
+  readonly genre = signal('');
+  readonly filtered = computed(() => {
+    const q = this.query().toLowerCase();
+    const g = this.genre();
+    return this.movies().filter(
+      (m) => m.title.toLowerCase().includes(q) && (g === '' || m.genres.includes(g)),
+    );
+  });
 
   find(id: number): Movie | undefined {
     return this.movies().find((m) => m.id === id);

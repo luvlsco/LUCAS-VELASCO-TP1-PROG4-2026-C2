@@ -1,9 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { CatalogStore } from '../../services/catalog-store';
+import { MOVIE_GENRES } from '../movie.model';
 
 @Component({
-  imports: [],
   selector: 'app-movie-list',
-  styleUrl: './movie-list.css',
+  imports: [],
   templateUrl: './movie-list.html',
 })
-export class MovieList {}
+export class MovieList {
+  protected readonly store = inject(CatalogStore);
+  protected readonly genreOptions = MOVIE_GENRES;
+}

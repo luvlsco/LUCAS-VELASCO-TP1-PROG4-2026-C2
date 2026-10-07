@@ -34,6 +34,21 @@ describe('CatalogStore', () => {
     expect(store.find(1)?.genres).toEqual(['Acción']);
   });
 
+  it('filtra por nombre, género y combinado', () => {
+    const store = new CatalogStore();
+    store.query.set('matrix');
+    expect(store.filtered().map((m) => m.title)).toEqual(['Matrix']);
+    store.query.set('');
+    store.genre.set('Romance');
+    expect(store.filtered().map((m) => m.title)).toEqual(['Titanic']);
+    store.query.set('a');
+    store.genre.set('Acción');
+    expect(store.filtered().map((m) => m.title)).toEqual(['Matrix', 'Gladiador']);
+    store.query.set('');
+    store.genre.set('');
+    expect(store.filtered().length).toBe(5);
+  });
+
   it('filtra destacadas y alterna con toggle', () => {
     const store = new CatalogStore();
     expect(store.featured().length).toBe(3);
