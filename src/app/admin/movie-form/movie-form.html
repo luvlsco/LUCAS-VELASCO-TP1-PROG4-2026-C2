@@ -1,1 +1,50 @@
-<p>movie-form works!</p>
+<h2>{{ movieId() ? 'Editar película' : 'Nueva película' }}</h2>
+
+<form [formRoot]="movieForm" (submit)="$event.preventDefault(); save()">
+  <label for="title">Título</label>
+  <input id="title" [formField]="movieForm.title" />
+  @let ft = movieForm.title();
+  @if (ft.touched() && !ft.valid()) {
+    @for (e of ft.errors(); track e.kind) {
+      <p class="error">{{ e.message }}</p>
+    }
+  }
+
+  <label for="image">Imagen (URL)</label>
+  <input id="image" type="url" [formField]="movieForm.image" />
+  @let fi = movieForm.image();
+  @if (fi.touched() && !fi.valid()) {
+    @for (e of fi.errors(); track e.kind) {
+      <p class="error">{{ e.message }}</p>
+    }
+  }
+
+  <label for="synopsis">Sinopsis</label>
+  <textarea id="synopsis" [formField]="movieForm.synopsis"></textarea>
+  @let fs = movieForm.synopsis();
+  @if (fs.touched() && !fs.valid()) {
+    @for (e of fs.errors(); track e.kind) {
+      <p class="error">{{ e.message }}</p>
+    }
+  }
+
+  <label for="duration">Duración (min)</label>
+  <input id="duration" type="number" [formField]="movieForm.duration" />
+  @let fd = movieForm.duration();
+  @if (fd.touched() && !fd.valid()) {
+    @for (e of fd.errors(); track e.kind) {
+      <p class="error">{{ e.message }}</p>
+    }
+  }
+
+  @if (submitError(); as error) {
+    <p class="error" role="alert">{{ error }}</p>
+  }
+
+  <div class="actions">
+    <button type="submit" [disabled]="saving()">
+      {{ saving() ? 'Guardando...' : 'Guardar película' }}
+    </button>
+    <a routerLink="/">Cancelar</a>
+  </div>
+</form>
