@@ -1,0 +1,55 @@
+@if (movie(); as m) {
+  <img [src]="m.image" [alt]="m.title" width="200" />
+  <h2>{{ m.title }}</h2>
+  <p>{{ m.synopsis }}</p>
+  <p>{{ m.duration }} min · {{ m.ageRating }} · {{ m.genres.join(', ') }}</p>
+
+  @if (store.enPreventa(m)) {
+    <p>Preventa: ${{ store.precioVigente(m) }} (normal ${{ m.price }})</p>
+  } @else {
+    <p>Precio: ${{ store.precioVigente(m) }}</p>
+  }
+
+  @if (reviews.count(m.id) === 0) {
+    <p>Sin reseñas todavía.</p>
+  } @else {
+    <p>Promedio: {{ reviews.average(m.id) }} ({{ reviews.count(m.id) }} reseñas)</p>
+  }
+
+  @for (r of reviews.forMovie(m.id); track $index) {
+    <article>
+      <p>{{ r.stars }} ★</p>
+      <p>{{ r.comment }}</p>
+    </article>
+  }
+
+  <h3>Dejá tu reseña</h3>
+  <form [formRoot]="reviewForm" (submit)="$event.preventDefault(); save()">
+    <label for="stars">Estrellas</label>
+    <select id="stars" [value]="draft().stars" (change)="setStars($any($event.target).value)">
+      <option value="1">1 ★</option>
+      <option value="2">2 ★</option>
+      <option value="3">3 ★</option>
+      <option value="4">4 ★</option>
+      <option value="5">5 ★</option>
+    </select>
+
+    <label for="comment">Comentario</label>
+    <textarea id="comment" [formField]="reviewForm.comment"></textarea>
+    @let fc = reviewForm.comment();
+    @if ((fc.touched() || submitted()) && !fc.valid()) {
+      @for (e of fc.errors(); track e.kind) {
+        <p class="error">{{ e.message }}</p>
+      }
+    }
+
+    @if (submitError(); as error) {
+      <p class="error" role="alert">{{ error }}</p>
+    }
+
+    <button type="submit">Enviar reseña</button>
+  </form>
+} @else {
+  <p>Película no encontrada.</p>
+  <a routerLink="/peliculas">Volver</a>
+}

@@ -1,0 +1,110 @@
+<h2>{{ movieId() ? 'Editar película' : 'Nueva película' }}</h2>
+
+<form [formRoot]="movieForm" (submit)="$event.preventDefault(); save()">
+  <label for="title">Título</label>
+  <input id="title" [formField]="movieForm.title" />
+  @let ft = movieForm.title();
+  @if (ft.touched() && !ft.valid()) {
+    @for (e of ft.errors(); track e.kind) {
+      <p class="error">{{ e.message }}</p>
+    }
+  }
+
+  <label for="image">Imagen (URL)</label>
+  <input id="image" type="url" [formField]="movieForm.image" />
+  @let fi = movieForm.image();
+  @if (fi.touched() && !fi.valid()) {
+    @for (e of fi.errors(); track e.kind) {
+      <p class="error">{{ e.message }}</p>
+    }
+  }
+
+  <label for="synopsis">Sinopsis</label>
+  <textarea id="synopsis" [formField]="movieForm.synopsis"></textarea>
+  @let fs = movieForm.synopsis();
+  @if (fs.touched() && !fs.valid()) {
+    @for (e of fs.errors(); track e.kind) {
+      <p class="error">{{ e.message }}</p>
+    }
+  }
+
+  <label for="duration">Duración (min)</label>
+  <input id="duration" type="number" [formField]="movieForm.duration" />
+  @let fd = movieForm.duration();
+  @if (fd.touched() && !fd.valid()) {
+    @for (e of fd.errors(); track e.kind) {
+      <p class="error">{{ e.message }}</p>
+    }
+  }
+
+  <fieldset>
+    <legend>Géneros</legend>
+    @for (g of genreOptions; track g) {
+      <label>
+        <input
+          type="checkbox"
+          [checked]="draft().genres.includes(g)"
+          (change)="toggleGenre(g)"
+        />
+        {{ g }}
+      </label>
+    }
+  </fieldset>
+  @let fg = movieForm.genres();
+  @if (submitted() && !fg.valid()) {
+    @for (e of fg.errors(); track e.kind) {
+      <p class="error">{{ e.message }}</p>
+    }
+  }
+
+  <label for="ageRating">Edad</label>
+  <select id="ageRating" [formField]="movieForm.ageRating">
+    <option value="libre">Libre</option>
+    <option value="13">13 años</option>
+    <option value="18">18 años</option>
+  </select>
+  @let fa = movieForm.ageRating();
+  @if (fa.touched() && !fa.valid()) {
+    @for (e of fa.errors(); track e.kind) {
+      <p class="error">{{ e.message }}</p>
+    }
+  }
+
+  <label for="releaseDate">Fecha de estreno</label>
+  <input id="releaseDate" type="date" [formField]="movieForm.releaseDate" />
+  @let fr = movieForm.releaseDate();
+  @if (fr.touched() && !fr.valid()) {
+    @for (e of fr.errors(); track e.kind) {
+      <p class="error">{{ e.message }}</p>
+    }
+  }
+
+  <label for="presalePrice">Precio preventa</label>
+  <input id="presalePrice" type="number" [formField]="movieForm.presalePrice" />
+  @let fp = movieForm.presalePrice();
+  @if (fp.touched() && !fp.valid()) {
+    @for (e of fp.errors(); track e.kind) {
+      <p class="error">{{ e.message }}</p>
+    }
+  }
+
+  <label for="price">Precio normal</label>
+  <input id="price" type="number" [formField]="movieForm.price" />
+  @let fpr = movieForm.price();
+  @if (fpr.touched() && !fpr.valid()) {
+    @for (e of fpr.errors(); track e.kind) {
+      <p class="error">{{ e.message }}</p>
+    }
+  }
+
+  @if (submitError(); as error) {
+    <p class="error" role="alert">{{ error }}</p>
+  }
+
+  <div class="actions">
+    <button type="submit" [disabled]="saving()">
+      {{ saving() ? 'Guardando...' : 'Guardar película' }}
+    </button>
+    <a routerLink="/">Cancelar</a>
+  </div>
+</form>

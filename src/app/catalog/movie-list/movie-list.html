@@ -1,0 +1,30 @@
+<h2>Películas</h2>
+
+<label for="query">Buscar</label>
+<input
+  id="query"
+  type="search"
+  placeholder="Nombre de la película"
+  [value]="store.query()"
+  (input)="store.query.set($any($event.target).value)"
+/>
+
+<label for="genre">Género</label>
+<select id="genre" [value]="store.genre()" (change)="store.genre.set($any($event.target).value)">
+  <option value="">Todos</option>
+  @for (g of genreOptions; track g) {
+    <option [value]="g">{{ g }}</option>
+  }
+</select>
+
+@for (m of store.filtered(); track m.id) {
+  <article>
+    <a [routerLink]="['/peliculas', m.id]">
+      <img [src]="m.image" [alt]="m.title" width="120" />
+      <h3>{{ m.title }}</h3>
+    </a>
+    <p>{{ m.genres.join(', ') }}</p>
+  </article>
+} @empty {
+  <p>Sin resultados.</p>
+}
