@@ -1,1 +1,26 @@
-<p>my-movies works!</p>
+<h2>Mis películas</h2>
+
+@for (w of mine.watched(); track w.movieId) {
+  @if (store.find(w.movieId); as m) {
+    <article>
+      <a [routerLink]="['/peliculas', m.id]">
+        <img [src]="m.image" [alt]="m.title" width="120" />
+        <h3>{{ m.title }}</h3>
+      </a>
+      <p>Vista: {{ w.watchedAt }}</p>
+      <label>
+        Mi calificación
+        <select [value]="mine.rating(m.id)" (change)="setRating(m.id, $any($event.target).value)">
+          <option [value]="0">Sin calificar</option>
+          <option [value]="1">1 ★</option>
+          <option [value]="2">2 ★</option>
+          <option [value]="3">3 ★</option>
+          <option [value]="4">4 ★</option>
+          <option [value]="5">5 ★</option>
+        </select>
+      </label>
+    </article>
+  }
+} @empty {
+  <p>Todavía no viste películas.</p>
+}

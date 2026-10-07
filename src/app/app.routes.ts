@@ -5,12 +5,14 @@ import { Home } from './catalog/home/home';
 import { ComingSoon } from './catalog/coming-soon/coming-soon';
 import { MovieDetail } from './catalog/movie-detail/movie-detail';
 import { MovieList } from './catalog/movie-list/movie-list';
+import { MyMovies } from './catalog/my-movies/my-movies';
 
 export const routes: Routes = [
   { path: '', component: Home },
   { path: 'peliculas', component: MovieList },
   { path: 'peliculas/:movieId', component: MovieDetail },
   { path: 'proximamente', component: ComingSoon },
+  { path: 'mis-peliculas', component: MyMovies },
   { path: 'admin/peliculas', component: MovieAdmin },
   { path: 'admin/peliculas/nueva', component: MovieForm },
   { path: 'admin/peliculas/:movieId/editar', component: MovieForm },
