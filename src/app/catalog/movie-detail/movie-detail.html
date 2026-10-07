@@ -12,7 +12,11 @@
 
   <h3>Funciones</h3>
   @for (s of booking.forMovie(m.id); track s.id) {
-    <p>{{ s.date }} {{ s.time }} · {{ booking.roomName(s.roomId) }} · {{ s.format }} · {{ s.language }}</p>
+    <p>
+      {{ s.date }} {{ s.time }} · {{ booking.roomName(s.roomId) }} · {{ s.format }} ·
+      {{ s.language }}
+      <a [routerLink]="['/funciones', s.id]">Ver mapa</a>
+    </p>
   } @empty {
     <p>Sin funciones programadas.</p>
   }

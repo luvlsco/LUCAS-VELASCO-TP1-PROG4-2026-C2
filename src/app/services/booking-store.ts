@@ -7,8 +7,7 @@ const ROOMS: Room[] = [
   { id: 3, name: 'Sala 3' },
 ];
 
-const SCREENINGS_MOCK: Screening[] = [
-  { id: 1, movieId: 1, roomId: 1, date: '2026-10-10', time: '18:00', format: '2D', language: 'castellano' },
+const SCREENINGS_MOCK: Screening[] = [  { id: 1, movieId: 1, roomId: 1, date: '2026-10-10', time: '18:00', format: '2D', language: 'castellano' },
   { id: 2, movieId: 2, roomId: 2, date: '2026-10-10', time: '20:00', format: '3D', language: 'subtitulada' },
   { id: 3, movieId: 3, roomId: 1, date: '2026-10-11', time: '18:00', format: '2D', language: 'castellano' },
   { id: 4, movieId: 4, roomId: 3, date: '2026-10-12', time: '22:00', format: '4D', language: 'castellano' },
@@ -18,6 +17,11 @@ const SCREENINGS_MOCK: Screening[] = [
 export class BookingStore {
   readonly rooms = signal<Room[]>(ROOMS);
   readonly screenings = signal<Screening[]>(SCREENINGS_MOCK);
+  readonly occupied = signal<Record<number, string[]>>({ 1: ['A1', 'A2', 'J5'], 2: ['B3'] });
+
+  isOccupied(screeningId: number, seatId: string): boolean {
+    return this.occupied()[screeningId]?.includes(seatId) ?? false;
+  }
 
   forMovie(movieId: number): Screening[] {
     return this.screenings().filter((s) => s.movieId === movieId);

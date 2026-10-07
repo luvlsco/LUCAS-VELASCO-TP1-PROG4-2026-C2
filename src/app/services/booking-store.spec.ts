@@ -45,6 +45,13 @@ describe('BookingStore', () => {
     expect(store.findFreeRoom('2026-10-10', '18:00', 175, undefined, durationOf)).toBe(3);
   });
 
+  it('detecta butacas ocupadas', () => {
+    const store = new BookingStore();
+    expect(store.isOccupied(1, 'A1')).toBe(true);
+    expect(store.isOccupied(1, 'A3')).toBe(false);
+    expect(store.isOccupied(3, 'A1')).toBe(false);
+  });
+
   it('detecta solapes y respeta 30 min', () => {
     const store = new BookingStore();
     const durationOf = (movieId: number): number =>

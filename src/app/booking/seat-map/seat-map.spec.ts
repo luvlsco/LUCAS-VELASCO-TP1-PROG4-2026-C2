@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { SeatMap } from './seat-map';
 
 describe('SeatMap', () => {
@@ -8,6 +9,7 @@ describe('SeatMap', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [SeatMap],
+      providers: [provideRouter([])],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SeatMap);

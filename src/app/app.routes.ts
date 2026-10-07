@@ -8,6 +8,7 @@ import { MovieList } from './catalog/movie-list/movie-list';
 import { MyMovies } from './catalog/my-movies/my-movies';
 import { ScreeningAdmin } from './booking/screening-admin/screening-admin';
 import { ScreeningForm } from './booking/screening-form/screening-form';
+import { SeatMap } from './booking/seat-map/seat-map';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -15,6 +16,7 @@ export const routes: Routes = [
   { path: 'peliculas/:movieId', component: MovieDetail },
   { path: 'proximamente', component: ComingSoon },
   { path: 'mis-peliculas', component: MyMovies },
+  { path: 'funciones/:screeningId', component: SeatMap },
   { path: 'admin/funciones', component: ScreeningAdmin },
   { path: 'admin/funciones/nueva', component: ScreeningForm },
   { path: 'admin/funciones/:screeningId/editar', component: ScreeningForm },
