@@ -20,6 +20,7 @@ export interface Movie {
   genres: string[];
   ageRating: AgeRating;
   featured: boolean;
+  soldTickets: number;
 }
 
 export type MovieDraft = Omit<Movie, 'id'>;
@@ -33,5 +34,6 @@ export function createEmptyMovieDraft(): MovieDraft {
     genres: [],
     ageRating: 'libre',
     featured: false,
+    soldTickets: 0,
   };
 }

@@ -1,3 +1,13 @@
+<h2>Top 3 más vendidas</h2>
+
+@for (m of store.top3(); track m.id) {
+  <article>
+    <img [src]="m.image" [alt]="m.title" width="120" />
+    <h3>{{ m.title }}</h3>
+    <p>{{ m.soldTickets }} entradas</p>
+  </article>
+}
+
 <h2>Destacadas</h2>
 
 @if (store.featured().length === 0) {

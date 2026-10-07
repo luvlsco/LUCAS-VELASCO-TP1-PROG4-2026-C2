@@ -63,6 +63,7 @@ export class MovieForm {
           genres: [...found.genres],
           ageRating: found.ageRating,
           featured: found.featured,
+          soldTickets: found.soldTickets,
         });
       }
     });

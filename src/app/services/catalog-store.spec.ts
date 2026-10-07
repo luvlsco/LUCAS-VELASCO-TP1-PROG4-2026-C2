@@ -13,6 +13,7 @@ describe('CatalogStore', () => {
       genres: ['Drama'],
       ageRating: 'libre',
       featured: false,
+      soldTickets: 0,
     };
     const created = store.add(draft);
     expect(created.id).toBeGreaterThan(0);
@@ -29,6 +30,7 @@ describe('CatalogStore', () => {
       genres: ['Acción'],
       ageRating: '13',
       featured: true,
+      soldTickets: 10,
     });
     expect(store.find(1)?.title).toBe('Editada');
     expect(store.find(1)?.genres).toEqual(['Acción']);
@@ -47,6 +49,22 @@ describe('CatalogStore', () => {
     store.query.set('');
     store.genre.set('');
     expect(store.filtered().length).toBe(5);
+  });
+
+  it('ordena el top 3 por entradas vendidas', () => {
+    const store = new CatalogStore();
+    expect(store.top3().map((m) => m.title)).toEqual(['Titanic', 'El Padrino', 'Matrix']);
+    store.add({
+      title: 'Sin ventas',
+      image: 'https://img.test/sv.jpg',
+      synopsis: 'Sinopsis con más de diez caracteres.',
+      duration: 90,
+      genres: ['Drama'],
+      ageRating: 'libre',
+      featured: false,
+      soldTickets: 0,
+    });
+    expect(store.top3().map((m) => m.title)).toEqual(['Titanic', 'El Padrino', 'Matrix']);
   });
 
   it('filtra destacadas y alterna con toggle', () => {

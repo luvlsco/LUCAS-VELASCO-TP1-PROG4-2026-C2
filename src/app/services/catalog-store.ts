@@ -13,6 +13,7 @@ const MOVIE_MOCK: Movie[] = [
     genres: ['Crimen', 'Drama'],
     ageRating: '18',
     featured: true,
+    soldTickets: 1800,
   },
   {
     id: 2,
@@ -23,6 +24,7 @@ const MOVIE_MOCK: Movie[] = [
     genres: ['Ciencia ficción', 'Aventura', 'Comedia'],
     ageRating: 'libre',
     featured: true,
+    soldTickets: 900,
   },
   {
     id: 3,
@@ -33,6 +35,7 @@ const MOVIE_MOCK: Movie[] = [
     genres: ['Drama', 'Romance'],
     ageRating: '13',
     featured: false,
+    soldTickets: 2300,
   },
   {
     id: 4,
@@ -43,6 +46,7 @@ const MOVIE_MOCK: Movie[] = [
     genres: ['Ciencia ficción', 'Acción'],
     ageRating: '13',
     featured: true,
+    soldTickets: 1500,
   },
   {
     id: 5,
@@ -53,6 +57,7 @@ const MOVIE_MOCK: Movie[] = [
     genres: ['Acción', 'Drama', 'Aventura'],
     ageRating: '13',
     featured: false,
+    soldTickets: 1200,
   },
 ];
 
@@ -60,10 +65,12 @@ const MOVIE_MOCK: Movie[] = [
 export class CatalogStore {
   readonly movies = signal<Movie[]>(MOVIE_MOCK);
   readonly featured = computed(() => this.movies().filter((m) => m.featured));
+  readonly top3 = computed(() =>
+    [...this.movies()].sort((a, b) => b.soldTickets - a.soldTickets).slice(0, 3),
+  );
   readonly query = signal('');
   readonly genre = signal('');
-  readonly filtered = computed(() => {
-    const q = this.query().toLowerCase();
+  readonly filtered = computed(() => {    const q = this.query().toLowerCase();
     const g = this.genre();
     return this.movies().filter(
       (m) => m.title.toLowerCase().includes(q) && (g === '' || m.genres.includes(g)),
