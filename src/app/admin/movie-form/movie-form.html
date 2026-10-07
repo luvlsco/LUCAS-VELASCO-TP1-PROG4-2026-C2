@@ -37,6 +37,39 @@
     }
   }
 
+  <fieldset>
+    <legend>Géneros</legend>
+    @for (g of genreOptions; track g) {
+      <label>
+        <input
+          type="checkbox"
+          [checked]="draft().genres.includes(g)"
+          (change)="toggleGenre(g)"
+        />
+        {{ g }}
+      </label>
+    }
+  </fieldset>
+  @let fg = movieForm.genres();
+  @if (submitted() && !fg.valid()) {
+    @for (e of fg.errors(); track e.kind) {
+      <p class="error">{{ e.message }}</p>
+    }
+  }
+
+  <label for="ageRating">Edad</label>
+  <select id="ageRating" [formField]="movieForm.ageRating">
+    <option value="libre">Libre</option>
+    <option value="13">13 años</option>
+    <option value="18">18 años</option>
+  </select>
+  @let fa = movieForm.ageRating();
+  @if (fa.touched() && !fa.valid()) {
+    @for (e of fa.errors(); track e.kind) {
+      <p class="error">{{ e.message }}</p>
+    }
+  }
+
   @if (submitError(); as error) {
     <p class="error" role="alert">{{ error }}</p>
   }

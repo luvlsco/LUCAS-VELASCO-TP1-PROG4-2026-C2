@@ -11,7 +11,7 @@ import {
   required,
 } from '@angular/forms/signals';
 import { CatalogStore } from '../../services/catalog-store';
-import { MovieDraft, createEmptyMovieDraft } from '../../catalog/movie.model';
+import { MovieDraft, MOVIE_GENRES, createEmptyMovieDraft } from '../../catalog/movie.model';
 
 @Component({
   selector: 'app-movie-form',
@@ -30,6 +30,8 @@ export class MovieForm {
   });
 
   protected draft = signal<MovieDraft>(createEmptyMovieDraft());
+  protected readonly genreOptions = MOVIE_GENRES;
+  protected submitted = signal(false);
   protected saving = signal(false);
   protected submitError = signal<string | null>(null);
 
@@ -43,6 +45,8 @@ export class MovieForm {
     maxLength(f.synopsis, 500, { message: 'Máximo 500 caracteres' });
     min(f.duration, 1, { message: 'Mínimo 1 minuto' });
     max(f.duration, 600, { message: 'Máximo 600 minutos' });
+    minLength(f.genres, 1, { message: 'Elegí al menos un género' });
+    required(f.ageRating, { message: 'La edad es obligatoria' });
   });
 
   constructor() {
@@ -56,12 +60,22 @@ export class MovieForm {
           image: found.image,
           synopsis: found.synopsis,
           duration: found.duration,
+          genres: [...found.genres],
+          ageRating: found.ageRating,
         });
       }
     });
   }
 
+  protected toggleGenre(genre: string): void {
+    this.draft.update((d) => ({
+      ...d,
+      genres: d.genres.includes(genre) ? d.genres.filter((g) => g !== genre) : [...d.genres, genre],
+    }));
+  }
+
   protected async save(): Promise<void> {
+    this.submitted.set(true);
     if (!this.movieForm().valid()) {
       this.submitError.set('Revisá los campos marcados.');
       return;

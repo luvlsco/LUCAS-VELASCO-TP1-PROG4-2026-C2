@@ -10,6 +10,8 @@ const MOVIE_MOCK: Movie[] = [
     synopsis:
       'El patriarca de una dinastía mafiosa transfiere el control de su imperio a su hijo menor.',
     duration: 175,
+    genres: ['Crimen', 'Drama'],
+    ageRating: '18',
   },
   {
     id: 2,
@@ -17,6 +19,8 @@ const MOVIE_MOCK: Movie[] = [
     image: 'https://a.ltrbxd.com/resized/film-poster/5/1/9/4/5/51945-back-to-the-future-0-1000-0-1500-crop.jpg',
     synopsis: 'Un adolescente viaja al pasado y debe asegurar que sus padres se conozcan.',
     duration: 116,
+    genres: ['Ciencia ficción', 'Aventura', 'Comedia'],
+    ageRating: 'libre',
   },
   {
     id: 3,
@@ -24,6 +28,8 @@ const MOVIE_MOCK: Movie[] = [
     image: 'https://a.ltrbxd.com/resized/film-poster/5/1/5/2/4/51524-titanic-0-1000-0-1500-crop.jpg',
     synopsis: 'Un romance a bordo del transatlántico condenado en su viaje inaugural.',
     duration: 194,
+    genres: ['Drama', 'Romance'],
+    ageRating: '13',
   },
   {
     id: 4,
@@ -31,6 +37,8 @@ const MOVIE_MOCK: Movie[] = [
     image: 'https://a.ltrbxd.com/resized/film-poster/5/1/5/1/8/51518-the-matrix-0-1000-0-1500-crop.jpg',
     synopsis: 'Un hacker descubre que su realidad es una simulación controlada por máquinas.',
     duration: 136,
+    genres: ['Ciencia ficción', 'Acción'],
+    ageRating: '13',
   },
   {
     id: 5,
@@ -38,6 +46,8 @@ const MOVIE_MOCK: Movie[] = [
     image: 'https://a.ltrbxd.com/resized/film-poster/5/1/9/5/2/51952-gladiator-2000-0-1000-0-1500-crop.jpg',
     synopsis: 'Un general romano busca venganza contra el emperador que asesinó a su familia.',
     duration: 155,
+    genres: ['Acción', 'Drama', 'Aventura'],
+    ageRating: '13',
   },
 ];
 

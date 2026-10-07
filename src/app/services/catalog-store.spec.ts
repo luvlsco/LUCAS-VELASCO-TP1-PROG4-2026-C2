@@ -10,6 +10,8 @@ describe('CatalogStore', () => {
       image: 'https://img.test/peli.jpg',
       synopsis: 'Una sinopsis válida con más de diez caracteres.',
       duration: 120,
+      genres: ['Drama'],
+      ageRating: 'libre',
     };
     const created = store.add(draft);
     expect(created.id).toBeGreaterThan(0);
@@ -23,7 +25,10 @@ describe('CatalogStore', () => {
       image: 'https://img.test/edit.jpg',
       synopsis: 'Sinopsis editada con más de diez caracteres.',
       duration: 100,
+      genres: ['Acción'],
+      ageRating: '13',
     });
     expect(store.find(1)?.title).toBe('Editada');
+    expect(store.find(1)?.genres).toEqual(['Acción']);
   });
 });
