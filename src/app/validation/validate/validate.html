@@ -1,1 +1,29 @@
-<p>validate works!</p>
+<h2>Validar entrada</h2>
+
+<label for="code">Código</label>
+<input
+  id="code"
+  placeholder="cine:{id}"
+  [value]="code()"
+  (input)="setCode($any($event.target).value)"
+/>
+<button type="button" (click)="lookup()">Buscar</button>
+
+@if (error(); as message) {
+  <p class="error" role="alert">{{ message }}</p>
+}
+@if (message(); as ok) {
+  <p>{{ ok }}</p>
+}
+
+@if (purchaseId(); as id) {
+  <h3>Compra {{ id }} ({{ tickets().length }} entradas)</h3>
+  <p>Ingreso: {{ used('sala') ? 'usado' : 'disponible' }}</p>
+  <p>Candy: {{ used('candy') ? 'usado' : 'disponible' }}</p>
+  <button type="button" [disabled]="saving() || used('sala')" (click)="validate('sala')">
+    Validar ingreso
+  </button>
+  <button type="button" [disabled]="saving() || used('candy')" (click)="validate('candy')">
+    Validar candy
+  </button>
+}
