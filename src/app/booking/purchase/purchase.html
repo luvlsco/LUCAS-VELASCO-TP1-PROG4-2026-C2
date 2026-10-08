@@ -1,5 +1,9 @@
 @if (purchaseId(); as id) {
   <h2>Compra {{ id }} confirmada</h2>
+  @if (qrUrl(); as qr) {
+    <img [src]="qr" alt="QR de la entrada" width="200" />
+  }
+  <button type="button" (click)="downloadPdf()">Descargar PDF</button>
   <a routerLink="/peliculas">Volver a cartelera</a>
 } @else if (screening(); as s) {
   <h2>Compra</h2>

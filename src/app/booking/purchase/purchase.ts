@@ -5,6 +5,7 @@ import { AuthService } from '../../services/auth.service';
 import { BookingStore } from '../../services/booking-store';
 import { CatalogStore } from '../../services/catalog-store';
 import { PurchaseApi } from '../purchase-api.service';
+import { QrService } from '../qr.service';
 import { areContiguous, buildRoomSeats, seatPrice, seatId } from '../seat.model';
 
 interface SeniorCoupon {
@@ -23,6 +24,7 @@ export class Purchase {
   protected readonly catalog = inject(CatalogStore);
   protected readonly auth = inject(AuthService);
   private readonly api = inject(PurchaseApi);
+  private readonly qr = inject(QrService);
 
   screeningId = input<number | undefined, unknown>(undefined, {
     transform: (value) =>
@@ -62,6 +64,7 @@ export class Purchase {
   protected saving = signal(false);
   protected error = signal<string | null>(null);
   protected purchaseId = signal<number | null>(null);
+  protected qrUrl = signal<string | null>(null);
 
   protected total = computed(() => Math.round(this.subtotal() * (1 - this.couponPct() / 100)));
 
@@ -93,6 +96,38 @@ export class Purchase {
     this.couponPct.set(this.firstCouponPct());
   }
 
+  protected async downloadPdf(): Promise<void> {
+    const s = this.screening();
+    const m = this.movie();
+    const qrUrl = this.qrUrl();
+    const id = this.purchaseId();
+    if (!s || !m || !qrUrl || id === null) return;
+    await this.qr.ticketPdf(
+      {
+        purchaseId: id,
+        movie: m.title,
+        date: s.date,
+        time: s.time,
+        room: this.booking.roomName(s.roomId),
+        format: s.format,
+        seats: this.confirmedSeats(),
+        total: this.confirmedTotal(),
+      },
+      qrUrl,
+    );
+  }
+
+  private confirmedSeats(): { id: string; price: number }[] {
+    return this.lastSeats;
+  }
+
+  private lastSeats: { id: string; price: number }[] = [];
+  private lastTotal = 0;
+
+  protected confirmedTotal(): number {
+    return this.lastTotal;
+  }
+
   protected useSeniorCoupon(pct: number): void {
     this.couponPct.set(pct);
   }
@@ -103,15 +138,18 @@ export class Purchase {
     this.saving.set(true);
     this.error.set(null);
     try {
+      this.lastSeats = this.seats();
+      this.lastTotal = this.total();
       const id = await this.api.create({
         userId: this.auth.session()?.user.id ?? null,
         screeningId: s.id,
-        seats: this.seats(),
-        total: this.total(),
+        seats: this.lastSeats,
+        total: this.lastTotal,
         couponPct: this.couponPct(),
       });
       this.booking.clearSelection();
       this.purchaseId.set(id);
+      this.qrUrl.set(await this.qr.toDataUrl(this.qr.code(id)));
     } catch (e) {
       this.error.set(e instanceof Error ? e.message : 'No se pudo confirmar la compra.');
     } finally {
