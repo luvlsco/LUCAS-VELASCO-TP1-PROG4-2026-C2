@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, effect, signal } from '@angular/core';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from './supabase.client';
 
@@ -15,6 +15,7 @@ export interface ProfileDraft {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   readonly session = signal<Session | null>(null);
+  readonly role = signal<string | null>(null);
   private resolveInitialized!: () => void;
   readonly initialized = new Promise<void>((resolve) => {
     this.resolveInitialized = resolve;
@@ -34,6 +35,20 @@ export class AuthService {
         this.resolveInitialized();
       })
       .catch(() => this.resolveInitialized());
+
+    effect(() => {
+      const userId = this.session()?.user.id;
+      if (!userId) {
+        this.role.set(null);
+        return;
+      }
+      void supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', userId)
+        .single()
+        .then(({ data }) => this.role.set(data?.role ?? 'cliente'));
+    });
   }
 
   async signUp(email: string, password: string, profile: Omit<ProfileDraft, 'email'>): Promise<string | null> {
