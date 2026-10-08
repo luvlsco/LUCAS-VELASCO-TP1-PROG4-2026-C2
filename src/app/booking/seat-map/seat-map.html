@@ -1,0 +1,25 @@
+@if (screening(); as s) {
+  <h2>{{ movieTitle(s.movieId) }}</h2>
+  <p>{{ s.date }} {{ s.time }} · {{ store.roomName(s.roomId) }} · {{ s.format }} · {{ s.language }}</p>
+
+  @for (row of rows(); track row[0]) {
+    <div class="row">
+      <span>{{ row[0] }}</span>
+      @for (seat of row[1]; track seat.number) {
+        <button type="button" [class]="seatClass(seat)" [disabled]="occupied(seat)" (click)="toggle(seat)">
+          {{ seat.number }}
+        </button>
+      }
+    </div>
+  }
+
+  @if (store.selected().length > 1 && !contiguous()) {
+    <p class="error">Elegí butacas contiguas.</p>
+  }
+
+  <p>Normal · Accesible · VIP · Ocupada</p>
+  <a routerLink="/peliculas">Volver</a>
+} @else {
+  <p>Función no encontrada.</p>
+  <a routerLink="/peliculas">Volver</a>
+}

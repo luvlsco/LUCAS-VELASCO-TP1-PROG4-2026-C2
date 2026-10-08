@@ -1,6 +1,6 @@
 # Sistema de Cine
 
-Aplicación web para un cine: cartelera, películas, reseñas, estrenos, preventa y administración.
+Aplicación web para un cine: cartelera, películas, reseñas, estrenos, preventa, salas, funciones, butacas y administración.
 
 ## Índice
 
@@ -21,6 +21,7 @@ Aplicación web para un cine: cartelera, películas, reseñas, estrenos, prevent
 - Mantener el estado en Signals centralizados (`signal`/`computed`).
 - Componer componentes standalone con signal inputs y `@if`/`@for`.
 - Incorporar rutas parametrizadas y una interfaz en español.
+- Modelar salas, funciones y butacas (estándar, accesibles y VIP).
 
 ## Funcionalidades
 
@@ -31,7 +32,9 @@ Aplicación web para un cine: cartelera, películas, reseñas, estrenos, prevent
 - **Preventa:** 7 días antes del estreno con precio especial; luego precio normal.
 - **Mis películas:** historial visual con póster, fecha y calificación propia.
 - **Admin películas:** lista con toggle "En principal", alta y edición (nombre, imagen URL, sinopsis, duración, géneros, edad, fecha de estreno, precios).
-- **Persistencia S1:** reseñas, alertas y calificaciones propias en `localStorage`.
+- **Admin funciones:** alta y edición (película, sala manual o automática, fecha, hora, formato 2D–5D, idioma), sin solapes y con 30 min entre funciones.
+- **Mapa de butacas:** 20 filas en bloques 4/20/4, J/K accesibles 2/10/2, R/S/T VIP con precio mayor; ocupación visible y selección contigua.
+- **Persistencia S1:** reseñas, alertas y calificaciones propias en `localStorage`. Salas, funciones y ocupación en memoria.
 
 ## Tecnologías
 
@@ -50,6 +53,7 @@ La aplicación arranca en `src/main.ts` con `bootstrapApplication` y `provideRou
 - `ReviewStore`: reseñas con promedio, persistidas en `localStorage`.
 - `AlertStore`: alertas de estreno en `localStorage`.
 - `MyMoviesStore`: historial mock + calificación propia en `localStorage`.
+- `BookingStore`: salas y funciones mock, sala automática, solapes, ocupación y selección.
 - `Home`: top 3 y destacadas con links al detalle.
 - `MovieList`: buscador y filtro por género.
 - `MovieDetail`: datos, precio vigente, reseñas y alta de reseña.
@@ -57,6 +61,8 @@ La aplicación arranca en `src/main.ts` con `bootstrapApplication` y `provideRou
 - `MyMovies`: historial con calificación propia.
 - `MovieAdmin`: lista con toggles y links de alta/edición.
 - `MovieForm`: alta y edición con Signal Forms y validadores.
+- `ScreeningAdmin` / `ScreeningForm`: funciones con sala automática y validación de solapes.
+- `SeatMap`: mapa por función con ocupación y selección contigua.
 
 La UI usa control de flujo integrado (`@if`, `@for`), Signals (`signal`, `computed`, `effect`) y Signal Forms. Estilo base mínimo en `src/styles.css`.
 
@@ -96,7 +102,11 @@ No commitear claves `service_role`. Solo URL y anon key en el frontend, con RLS 
 | `/peliculas/:movieId` | Detalle | Datos, precio, reseñas y promedio. |
 | `/proximamente` | Próximamente | Estrenos con alerta. |
 | `/mis-peliculas` | Mis películas | Historial con calificación propia. |
+| `/funciones/:screeningId` | Mapa | Butacas con ocupación y selección. |
 | `/admin/peliculas` | Admin | Lista con toggles y accesos. |
+| `/admin/funciones` | Admin funciones | Lista con accesos. |
+| `/admin/funciones/nueva` | Nueva función | Alta. |
+| `/admin/funciones/:screeningId/editar` | Editar función | Modifica una función. |
 | `/admin/peliculas/nueva` | Nueva película | Alta. |
 | `/admin/peliculas/:movieId/editar` | Editar película | Modifica una película. |
 
@@ -106,7 +116,7 @@ No commitear claves `service_role`. Solo URL y anon key en el frontend, con RLS 
 npm test -- --watch=false
 ```
 
-Vitest vía `@angular/build:unit-test` (solo `src/**/*.spec.ts`): 10 archivos, 20 pruebas. Cubren el store (alta, edición, filtros, destacadas, top 3, estrenos, preventa), reseñas, alertas y calificaciones, más creación de componentes. Sin e2e.
+Vitest vía `@angular/build:unit-test` (solo `src/**/*.spec.ts`): 15 archivos, 37 pruebas. Cubren el store (alta, edición, filtros, destacadas, top 3, estrenos, preventa), reseñas, alertas y calificaciones, salas (automática, solapes), butacas (mapa, ocupación, contigüidad, selección), más creación de componentes. Sin e2e.
 
 ## Estructura del proyecto
 
@@ -123,11 +133,17 @@ Vitest vía `@angular/build:unit-test` (solo `src/**/*.spec.ts`): 10 archivos, 2
 │       │   ├── movie.model.ts / review.model.ts
 │       │   ├── home/          # Top 3 y destacadas
 │       │   ├── movie-list/    # Buscador y filtro
-│       │   ├── movie-detail/  # Datos, precio y reseñas
+│       │   ├── movie-detail/  # Datos, precio, funciones y reseñas
 │       │   ├── coming-soon/   # Estrenos y alertas
 │       │   └── my-movies/     # Historial propio
+│       ├── booking/
+│       │   ├── screening.model.ts / seat.model.ts
+│       │   ├── screening-admin/ # Lista de funciones
+│       │   ├── screening-form/  # Alta y edición
+│       │   └── seat-map/        # Mapa con selección
 │       └── services/
 │           ├── catalog-store.ts   # Películas y derivados
+│           ├── booking-store.ts   # Salas, funciones y selección
 │           ├── review-store.ts    # Reseñas (localStorage)
 │           ├── alert-store.ts     # Alertas (localStorage)
 │           └── my-movies-store.ts # Historial y ratings

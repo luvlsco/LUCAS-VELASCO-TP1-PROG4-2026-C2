@@ -1,0 +1,13 @@
+<h2>Funciones</h2>
+<a routerLink="/admin/funciones/nueva">Nueva función</a>
+
+@for (s of store.screenings(); track s.id) {
+  <article>
+    <h3>{{ movieTitle(s.movieId) }}</h3>
+    <p>{{ s.date }} {{ s.time }} · {{ store.roomName(s.roomId) }} · {{ s.format }} · {{ s.language }}</p>
+    <a [routerLink]="['/admin/funciones', s.id, 'editar']">Editar</a>
+    <button type="button" (click)="store.remove(s.id)">Borrar</button>
+  </article>
+} @empty {
+  <p>No hay funciones.</p>
+}
