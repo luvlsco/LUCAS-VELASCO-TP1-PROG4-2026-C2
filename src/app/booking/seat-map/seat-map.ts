@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, numberAttribute } from '@angular/core';
+import { Component, computed, effect, inject, input, numberAttribute } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { BookingStore } from '../../services/booking-store';
 import { CatalogStore } from '../../services/catalog-store';
@@ -22,6 +22,13 @@ export class SeatMap {
     const id = this.screeningId();
     return id === undefined ? undefined : this.store.screenings().find((s) => s.id === id);
   });
+
+  constructor() {
+    effect(() => {
+      const id = this.screeningId();
+      if (id !== undefined) void this.store.loadOccupied(id);
+    });
+  }
 
   protected rows = computed(() => {
     const byRow = new Map<string, Seat[]>();
