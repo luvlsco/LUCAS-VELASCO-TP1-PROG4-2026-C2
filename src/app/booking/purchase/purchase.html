@@ -36,6 +36,22 @@
 
     <p>Total: ${{ total() }}</p>
 
+    @if (requiredAge() > 0) {
+      <p>Película +{{ requiredAge() }}: debe ir un adulto.</p>
+      @if (profileBirthdate() === null) {
+        <label for="birthdate">Fecha de nacimiento</label>
+        <input
+          id="birthdate"
+          type="date"
+          [value]="manualBirthdate()"
+          (change)="setBirthdate($any($event.target).value)"
+        />
+      }
+      @if (age() !== null && !ageOk()) {
+        <p class="error">No cumple la edad mínima.</p>
+      }
+    }
+
     @if (error(); as message) {
       <p class="error" role="alert">{{ message }}</p>
     }

@@ -9,6 +9,7 @@ export interface TicketPdfData {
   format: string;
   seats: { id: string; price: number }[];
   total: number;
+  adultNotice: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -37,6 +38,10 @@ export class QrService {
     ]) {
       y += 10;
       pdf.text(line, 10, y);
+    }
+    if (data.adultNotice) {
+      y += 10;
+      pdf.text('Debe ir un adulto.', 10, y);
     }
     pdf.addImage(qrDataUrl, 'PNG', 10, y + 10, 60, 60);
     pdf.save(`entrada-${data.purchaseId}.pdf`);

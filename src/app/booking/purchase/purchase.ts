@@ -61,12 +61,32 @@ export class Purchase {
   protected couponPct = signal(0);
   protected firstCouponPct = signal(0);
   protected seniorCoupons = signal<SeniorCoupon[]>([]);
+  protected profileBirthdate = signal<string | null>(null);
+  protected manualBirthdate = signal('');
   protected saving = signal(false);
   protected error = signal<string | null>(null);
   protected purchaseId = signal<number | null>(null);
   protected qrUrl = signal<string | null>(null);
 
   protected total = computed(() => Math.round(this.subtotal() * (1 - this.couponPct() / 100)));
+
+  protected requiredAge = computed(() => {
+    const rating = this.movie()?.ageRating;
+    return rating === '13' || rating === '18' ? Number(rating) : 0;
+  });
+
+  protected age = computed(() => {
+    const birthdate = this.profileBirthdate() ?? (this.manualBirthdate() || null);
+    if (!birthdate) return null;
+    return Math.floor((Date.now() - new Date(birthdate).getTime()) / (365.25 * 86400000));
+  });
+
+  protected ageOk = computed(() => {
+    const required = this.requiredAge();
+    if (required === 0) return true;
+    const age = this.age();
+    return age !== null && age >= required;
+  });
 
   constructor() {
     effect(() => {
@@ -78,8 +98,10 @@ export class Purchase {
         .eq('id', userId)
         .single()
         .then(({ data }) => {
-          if (data && !data.first_coupon_used) this.firstCouponPct.set(data.coupon_pct ?? 0);
-          if (data?.birthdate) {
+          if (!data) return;
+          if (!data.first_coupon_used) this.firstCouponPct.set(data.coupon_pct ?? 0);
+          if (data.birthdate) {
+            this.profileBirthdate.set(data.birthdate);
             const age =
               (Date.now() - new Date(data.birthdate).getTime()) / (365.25 * 86400000);
             void supabase
@@ -112,6 +134,7 @@ export class Purchase {
         format: s.format,
         seats: this.confirmedSeats(),
         total: this.confirmedTotal(),
+        adultNotice: this.requiredAge() > 0,
       },
       qrUrl,
     );
@@ -132,9 +155,17 @@ export class Purchase {
     this.couponPct.set(pct);
   }
 
+  protected setBirthdate(value: string): void {
+    this.manualBirthdate.set(value);
+  }
+
   protected async confirm(): Promise<void> {
     const s = this.screening();
     if (!s || !this.validSelection()) return;
+    if (!this.ageOk()) {
+      this.error.set('No cumple la edad mínima para esta película.');
+      return;
+    }
     this.saving.set(true);
     this.error.set(null);
     try {
