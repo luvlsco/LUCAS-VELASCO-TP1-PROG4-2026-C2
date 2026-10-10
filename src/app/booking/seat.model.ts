@@ -43,6 +43,14 @@ export function seatPrice(seat: Seat, basePrice: number): number {
   return seat.kind === 'vip' ? Math.round(basePrice * VIP_MULTIPLIER) : basePrice;
 }
 
+export function purchaseTotal(ids: string[], seats: Seat[], basePrice: number): number {
+  const byId = new Map(seats.map((s) => [seatId(s), s]));
+  return ids.reduce((acc, id) => {
+    const seat = byId.get(id);
+    return seat ? acc + seatPrice(seat, basePrice) : acc;
+  }, 0);
+}
+
 export function areContiguous(ids: string[]): boolean {
   if (ids.length <= 1) return true;
   const rows = ids.map((id) => id.replace(/[0-9]/g, ''));

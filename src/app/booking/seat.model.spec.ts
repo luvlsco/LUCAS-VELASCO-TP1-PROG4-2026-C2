@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { areContiguous, buildRoomSeats, seatId, seatPrice } from './seat.model';
+import { areContiguous, buildRoomSeats, purchaseTotal, seatId, seatPrice } from './seat.model';
 
 describe('buildRoomSeats', () => {
   const seats = buildRoomSeats();
@@ -43,5 +43,11 @@ describe('buildRoomSeats', () => {
     expect(areContiguous(['A7', 'A5', 'A6'])).toBe(true);
     expect(areContiguous(['A5', 'A7'])).toBe(false);
     expect(areContiguous(['A5', 'B5'])).toBe(false);
+  });
+
+  it('suma total con VIP', () => {
+    const seats = buildRoomSeats();
+    expect(purchaseTotal(['A1', 'R1'], seats, 5000)).toBe(12500);
+    expect(purchaseTotal(['Z9'], seats, 5000)).toBe(0);
   });
 });

@@ -1,0 +1,50 @@
+<h2>Registro</h2>
+
+<form [formRoot]="registerForm" (submit)="$event.preventDefault(); save()">
+  <label for="email">Mail</label>
+  <input id="email" type="email" [formField]="registerForm.email" />
+  @let fe = registerForm.email();
+  @if (fe.touched() && !fe.valid()) {
+    @for (e of fe.errors(); track e.kind) {
+      <p class="error">{{ e.message }}</p>
+    }
+  }
+
+  <label for="password">Contraseña</label>
+  <input id="password" type="password" [formField]="registerForm.password" />
+  @let fp = registerForm.password();
+  @if (fp.touched() && !fp.valid()) {
+    @for (e of fp.errors(); track e.kind) {
+      <p class="error">{{ e.message }}</p>
+    }
+  }
+
+  <label for="firstName">Nombre</label>
+  <input id="firstName" [formField]="registerForm.firstName" />
+
+  <label for="lastName">Apellido</label>
+  <input id="lastName" [formField]="registerForm.lastName" />
+
+  <label for="birthdate">Fecha de nacimiento</label>
+  <input id="birthdate" type="date" [formField]="registerForm.birthdate" />
+
+  <label for="bloodType">Tipo de sangre</label>
+  <input id="bloodType" [formField]="registerForm.bloodType" />
+
+  <label for="eyeColor">Color de ojos</label>
+  <input id="eyeColor" [formField]="registerForm.eyeColor" />
+
+  <label for="vacationDays">Días de vacaciones por año</label>
+  <input id="vacationDays" type="number" [formField]="registerForm.vacationDays" />
+
+  @if (submitError(); as error) {
+    <p class="error" role="alert">{{ error }}</p>
+  }
+
+  <div class="actions">
+    <button type="submit" [disabled]="saving()">
+      {{ saving() ? 'Registrando...' : 'Registrarme' }}
+    </button>
+    <a routerLink="/login">Ya tengo cuenta</a>
+  </div>
+</form>

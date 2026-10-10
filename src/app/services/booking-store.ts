@@ -1,4 +1,5 @@
 import { Injectable, signal } from '@angular/core';
+import { supabase } from './supabase.client';
 import { Room, Screening, ScreeningDraft, ScreeningSlot } from '../booking/screening.model';
 
 const ROOMS: Room[] = [
@@ -21,6 +22,16 @@ export class BookingStore {
 
   isOccupied(screeningId: number, seatId: string): boolean {
     return this.occupied()[screeningId]?.includes(seatId) ?? false;
+  }
+
+  async loadOccupied(screeningId: number): Promise<void> {
+    const { data } = await supabase
+      .from('tickets')
+      .select('seat')
+      .eq('screening_id', screeningId);
+    if (!data) return;
+    const seats = (data as { seat: string }[]).map((t) => t.seat);
+    this.occupied.update((occ) => ({ ...occ, [screeningId]: seats }));
   }
 
   readonly selected = signal<string[]>([]);

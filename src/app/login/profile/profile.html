@@ -1,0 +1,10 @@
+<h2>Perfil</h2>
+
+@if (profile(); as p) {
+  <p>{{ p.first_name }} {{ p.last_name }}</p>
+  <p>{{ p.email }}</p>
+} @else {
+  <p>{{ auth.session()?.user.email }}</p>
+}
+<button type="button" (click)="auth.signOut()">Cerrar sesión</button>
+<a routerLink="/">Volver</a>

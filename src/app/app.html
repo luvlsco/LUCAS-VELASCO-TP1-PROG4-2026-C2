@@ -4,5 +4,12 @@
   <a routerLink="/proximamente">Próximamente</a>
   <a routerLink="/mis-peliculas">Mis películas</a>
   <a routerLink="/admin/peliculas">Admin</a>
+  @if (auth.session(); as session) {
+    <span>Hola, {{ session.user.email }}</span>
+    <a routerLink="/perfil">Perfil</a>
+    <button type="button" (click)="auth.signOut()">Salir</button>
+  } @else {
+    <a routerLink="/login">Ingresar</a>
+  }
 </nav>
 <router-outlet />

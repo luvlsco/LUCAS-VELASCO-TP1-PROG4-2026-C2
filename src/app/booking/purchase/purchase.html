@@ -1,0 +1,65 @@
+@if (purchaseId(); as id) {
+  <h2>Compra {{ id }} confirmada</h2>
+  @if (qrUrl(); as qr) {
+    <img [src]="qr" alt="QR de la entrada" width="200" />
+  }
+  <button type="button" (click)="downloadPdf()">Descargar PDF</button>
+  <a routerLink="/peliculas">Volver a cartelera</a>
+} @else if (screening(); as s) {
+  <h2>Compra</h2>
+  <p>{{ s.date }} {{ s.time }} · {{ booking.roomName(s.roomId) }} · {{ s.format }}</p>
+
+  @if (!validSelection()) {
+    <p class="error">Elegí butacas contiguas en el mapa.</p>
+    <a [routerLink]="['/funciones', s.id]">Volver al mapa</a>
+  } @else {
+    @for (seat of seats(); track seat.id) {
+      <p>{{ seat.id }} · ${{ seat.price }}</p>
+    }
+    <p>Subtotal: ${{ subtotal() }}</p>
+
+    @if (auth.session()) {
+      @if (firstCouponPct() > 0) {
+        <button type="button" (click)="useFirstCoupon()">
+          Usar cupón primera compra ({{ firstCouponPct() }}%)
+        </button>
+      }
+      @for (c of seniorCoupons(); track c.id) {
+        <button type="button" (click)="useSeniorCoupon(c.pct)">Usar cupón +50 ({{ c.pct }}%)</button>
+      }
+      @if (couponPct() > 0) {
+        <p>Cupón aplicado: {{ couponPct() }}%</p>
+      }
+    } @else {
+      <p><a routerLink="/login">Ingresá</a> para usar cupones.</p>
+    }
+
+    <p>Total: ${{ total() }}</p>
+
+    @if (requiredAge() > 0) {
+      <p>Película +{{ requiredAge() }}: debe ir un adulto.</p>
+      @if (profileBirthdate() === null) {
+        <label for="birthdate">Fecha de nacimiento</label>
+        <input
+          id="birthdate"
+          type="date"
+          [value]="manualBirthdate()"
+          (change)="setBirthdate($any($event.target).value)"
+        />
+      }
+      @if (age() !== null && !ageOk()) {
+        <p class="error">No cumple la edad mínima.</p>
+      }
+    }
+
+    @if (error(); as message) {
+      <p class="error" role="alert">{{ message }}</p>
+    }
+    <button type="button" [disabled]="saving()" (click)="confirm()">
+      {{ saving() ? 'Confirmando...' : 'Confirmar compra' }}
+    </button>
+  }
+} @else {
+  <p>Función no encontrada.</p>
+  <a routerLink="/peliculas">Volver</a>
+}
