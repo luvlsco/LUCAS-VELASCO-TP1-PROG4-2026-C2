@@ -1,0 +1,62 @@
+<h2>Candy Bar</h2>
+
+<h3>Categorías</h3>
+@for (c of categories(); track c.id) {
+  <p>{{ c.name }}</p>
+} @empty {
+  <p>Sin categorías.</p>
+}
+<input
+  placeholder="Nueva categoría"
+  [value]="categoryName()"
+  (input)="setCategoryName($any($event.target).value)"
+/>
+<button type="button" (click)="addCategory()">Agregar categoría</button>
+
+<h3>Productos</h3>
+@for (p of products(); track p.id) {
+  <article>
+    <h4>{{ p.name }} · ${{ p.price }}</h4>
+    <p>{{ categoryNameOf(p.category_id) }}</p>
+    <button type="button" (click)="removeProduct(p.id)">Borrar</button>
+  </article>
+} @empty {
+  <p>Sin productos.</p>
+}
+
+<h3>Nuevo producto</h3>
+<form [formRoot]="productForm" (submit)="$event.preventDefault(); addProduct()">
+  <label for="name">Nombre</label>
+  <input id="name" [value]="draft().name" (input)="setField('name', $any($event.target).value)" />
+  @let fn = productForm.name();
+  @if (fn.touched() && !fn.valid()) {
+    @for (e of fn.errors(); track e.kind) {
+      <p class="error">{{ e.message }}</p>
+    }
+  }
+
+  <label for="price">Precio</label>
+  <input
+    id="price"
+    type="number"
+    [value]="draft().price"
+    (input)="setField('price', $any($event.target).value)"
+  />
+
+  <label for="category">Categoría</label>
+  <select
+    id="category"
+    [value]="draft().categoryId"
+    (change)="setField('categoryId', $any($event.target).value)"
+  >
+    <option [value]="0">Sin categoría</option>
+    @for (c of categories(); track c.id) {
+      <option [value]="c.id">{{ c.name }}</option>
+    }
+  </select>
+
+  @if (error(); as message) {
+    <p class="error" role="alert">{{ message }}</p>
+  }
+  <button type="submit">Agregar producto</button>
+</form>
