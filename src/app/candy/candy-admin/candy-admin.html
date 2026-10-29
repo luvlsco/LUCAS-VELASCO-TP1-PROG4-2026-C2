@@ -93,3 +93,29 @@
   (input)="setComboField('items', $any($event.target).value)"
 />
 <button type="button" (click)="addCombo()">Agregar combo</button>
+
+<h3>Recompensas</h3>
+@for (r of rewards(); track r.id) {
+  <article>
+    <h4>{{ r.label }} · {{ r.cost_points }} puntos</h4>
+    <button type="button" (click)="removeReward(r.id)">Borrar</button>
+  </article>
+} @empty {
+  <p>Sin recompensas.</p>
+}
+
+<h3>Nueva recompensa</h3>
+<label for="rewardLabel">Nombre</label>
+<input
+  id="rewardLabel"
+  [value]="rewardDraft().label"
+  (input)="setRewardField('label', $any($event.target).value)"
+/>
+<label for="rewardCost">Costo en puntos</label>
+<input
+  id="rewardCost"
+  type="number"
+  [value]="rewardDraft().costPoints"
+  (input)="setRewardField('costPoints', $any($event.target).value)"
+/>
+<button type="button" (click)="addReward()">Agregar recompensa</button>

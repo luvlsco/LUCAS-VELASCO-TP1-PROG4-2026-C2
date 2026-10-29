@@ -17,6 +17,12 @@ export interface Combo {
   items: string;
 }
 
+export interface Reward {
+  id: number;
+  label: string;
+  cost_points: number;
+}
+
 export function candyTotal(items: { price: number }[]): number {
   return items.reduce((acc, item) => acc + item.price, 0);
 }
