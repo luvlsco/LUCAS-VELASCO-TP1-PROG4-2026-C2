@@ -7,6 +7,7 @@ export interface PurchaseInput {
   seats: { id: string; price: number }[];
   total: number;
   couponPct: number;
+  items: { label: string; price: number }[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -21,6 +22,12 @@ export class PurchaseApi {
       p_coupon_pct: input.couponPct,
     });
     if (error) throw new Error(error.message);
+    if (input.items.length > 0) {
+      const { error: itemsError } = await supabase.from('purchase_items').insert(
+        input.items.map((item) => ({ purchase_id: data, label: item.label, price: item.price })),
+      );
+      if (itemsError) throw new Error(itemsError.message);
+    }
     return data as number;
   }
 }

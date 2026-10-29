@@ -60,3 +60,36 @@
   }
   <button type="submit">Agregar producto</button>
 </form>
+
+<h3>Combos</h3>
+@for (c of combos(); track c.id) {
+  <article>
+    <h4>{{ c.name }} · ${{ c.price }}</h4>
+    <p>{{ c.items }}</p>
+    <button type="button" (click)="removeCombo(c.id)">Borrar</button>
+  </article>
+} @empty {
+  <p>Sin combos.</p>
+}
+
+<h3>Nuevo combo</h3>
+<label for="comboName">Nombre</label>
+<input
+  id="comboName"
+  [value]="comboDraft().name"
+  (input)="setComboField('name', $any($event.target).value)"
+/>
+<label for="comboPrice">Precio fijo</label>
+<input
+  id="comboPrice"
+  type="number"
+  [value]="comboDraft().price"
+  (input)="setComboField('price', $any($event.target).value)"
+/>
+<label for="comboItems">Incluye</label>
+<input
+  id="comboItems"
+  [value]="comboDraft().items"
+  (input)="setComboField('items', $any($event.target).value)"
+/>
+<button type="button" (click)="addCombo()">Agregar combo</button>
