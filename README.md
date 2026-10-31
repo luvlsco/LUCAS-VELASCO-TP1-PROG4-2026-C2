@@ -1,6 +1,6 @@
 # Sistema de Cine
 
-Aplicación web para un cine: cartelera, películas, reseñas, estrenos, preventa, salas, funciones, butacas, cuentas, compra con QR y administración.
+Aplicación web para un cine: cartelera, películas, reseñas, estrenos, preventa, salas, funciones, butacas, cuentas, compra con QR, candy, puntos, crédito y administración.
 
 ## Índice
 
@@ -38,7 +38,11 @@ Aplicación web para un cine: cartelera, películas, reseñas, estrenos, prevent
 - **Cuentas:** registro (mail, nombre, apellido, nacimiento, sangre, ojos, vacaciones), login email + Google/GitHub, perfil y cierre de sesión.
 - **Compra:** función + butacas contiguas, cupón primera compra y +50, compra anónima o registrada, restricción de edad con aviso de adulto.
 - **QR y validación:** QR + PDF por compra; empleado valida ingreso/candy por separado, con código manual y auditoría. Compra atómica vía RPC.
-- **Persistencia:** reseñas, alertas y calificaciones propias en `localStorage`; cuentas, compras, tickets y ocupación en Supabase.
+- **Candy:** productos, categorías y combos con precio fijo, destacados en la compra.
+- **Puntos:** 1 por peso en compra registrada, recompensas configurables, canje e historial en el perfil.
+- **Crédito:** cancelar hasta 2 h antes genera crédito visible y combinable en la compra.
+- **Avisos:** próximas funciones (24 h/48 h) en el perfil y aviso al validar. Push real pendiente de servidor.
+- **Persistencia:** reseñas, alertas y calificaciones propias en `localStorage`; resto en Supabase.
 
 ## Tecnologías
 
@@ -72,8 +76,10 @@ La aplicación arranca en `src/main.ts` con `bootstrapApplication` y `provideRou
 - `MovieForm`: alta y edición con Signal Forms y validadores.
 - `ScreeningAdmin` / `ScreeningForm`: funciones con sala automática y validación de solapes.
 - `SeatMap`: mapa por función con ocupación y selección contigua.
-- `Login` / `Register` / `Profile`: cuentas con Supabase Auth.
-- `Purchase`: resumen, cupones, edad y confirmación con QR/PDF.
+- `Login` / `Register` / `Profile`: cuentas, puntos, canjes, crédito y próximas funciones.
+- `Purchase`: resumen, cupones, candy, crédito, edad y confirmación con QR/PDF.
+- `MyPurchases`: historial con cancelación a crédito.
+- `CandyAdmin`: productos, categorías, combos y recompensas.
 - `Validate`: validación de empleado (lazy, con rol).
 
 La UI usa control de flujo integrado (`@if`, `@for`), Signals (`signal`, `computed`, `effect`) y Signal Forms. Estilo base mínimo en `src/styles.css`.
@@ -82,7 +88,7 @@ La UI usa control de flujo integrado (`@if`, `@for`), Signals (`signal`, `comput
 
 - Node.js compatible con Angular 22 y npm.
 - Navegador actualizado.
-- Proyecto Supabase con Auth (Email + Google/GitHub), Postgres y RPC. Tablas: `profiles`, `coupons`, `purchases`, `tickets`, `validations_log`.
+- Proyecto Supabase con Auth (Email + Google/GitHub), Postgres y RPC. Tablas: `profiles`, `coupons`, `purchases`, `tickets`, `purchase_items`, `validations_log`, `candy_categories`, `candy_products`, `combos`, `rewards`, `redemptions`.
 
 ```bash
 node --version
@@ -115,11 +121,13 @@ No commitear claves `service_role`. Solo URL y anon key en el frontend, con RLS 
 | `/proximamente` | Próximamente | Estrenos con alerta. |
 | `/mis-peliculas` | Mis películas | Historial con calificación propia. |
 | `/funciones/:screeningId` | Mapa | Butacas con ocupación y selección. |
-| `/compra/:screeningId` | Compra | Resumen, cupones y confirmación. |
+| `/compra/:screeningId` | Compra | Resumen, cupones, candy, crédito y confirmación. |
+| `/mis-compras` | Mis compras | Historial con cancelación. |
 | `/login` | Ingresar | Email + Google/GitHub. |
 | `/registro` | Registro | Alta con 7 campos. |
-| `/perfil` | Perfil | Datos y cierre de sesión. |
+| `/perfil` | Perfil | Puntos, crédito, canjes y próximas funciones. |
 | `/empleado/validar` | Validar | QR o código manual (lazy, con rol). |
+| `/admin/candy` | Admin candy | Productos, combos y recompensas. |
 | `/admin/peliculas` | Admin | Lista con toggles y accesos. |
 | `/admin/funciones` | Admin funciones | Lista con accesos. |
 | `/admin/funciones/nueva` | Nueva función | Alta. |
@@ -133,7 +141,7 @@ No commitear claves `service_role`. Solo URL y anon key en el frontend, con RLS 
 npm test -- --watch=false
 ```
 
-Vitest vía `@angular/build:unit-test` (solo `src/**/*.spec.ts`): 15 archivos, 38 pruebas. Cubren los stores (alta, edición, filtros, destacadas, top 3, estrenos, preventa), reseñas, alertas y calificaciones, salas (automática, solapes), butacas (mapa, ocupación, contigüidad, selección, total), más creación de componentes. Auth, compra, QR y validación pegan red real y se prueban manual. Sin e2e.
+Vitest vía `@angular/build:unit-test` (solo `src/**/*.spec.ts`): 17 archivos, 41 pruebas. Cubren los stores, salas (automática, solapes, cancelación, recordatorios), butacas (mapa, ocupación, contigüidad, selección, total) y candy, más creación de componentes. Auth, compra, QR y validación pegan red real y se prueban manual. Sin e2e.
 
 ## Estructura del proyecto
 
@@ -159,7 +167,11 @@ Vitest vía `@angular/build:unit-test` (solo `src/**/*.spec.ts`): 15 archivos, 3
 │       │   ├── screening-admin/ # Lista de funciones
 │       │   ├── screening-form/  # Alta y edición
 │       │   ├── seat-map/        # Mapa con selección
-│       │   └── purchase/        # Compra con QR/PDF
+│       │   ├── purchase/        # Compra con QR/PDF
+│       │   └── my-purchases/    # Historial con cancelación
+│       ├── candy/
+│       │   ├── candy.model.ts
+│       │   └── candy-admin/     # Productos, combos, recompensas
 │       ├── login/
 │       │   ├── login/ register/ profile/
 │       ├── validation/
