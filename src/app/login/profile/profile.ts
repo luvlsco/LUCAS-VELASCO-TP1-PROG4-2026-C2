@@ -9,6 +9,7 @@ interface ProfileData {
   first_name: string | null;
   last_name: string | null;
   points: number | null;
+  credit: number | null;
 }
 
 interface Redemption {
@@ -62,7 +63,7 @@ export class Profile {
 
   private async load(userId: string): Promise<void> {
     const [{ data: profile }, { data: rewards }, { data: redemptions }] = await Promise.all([
-      supabase.from('profiles').select('email, first_name, last_name, points').eq('id', userId).single(),
+      supabase.from('profiles').select('email, first_name, last_name, points, credit').eq('id', userId).single(),
       supabase.from('rewards').select('id, label, cost_points').order('cost_points'),
       supabase
         .from('redemptions')

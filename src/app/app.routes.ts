@@ -10,6 +10,7 @@ import { ScreeningAdmin } from './booking/screening-admin/screening-admin';
 import { ScreeningForm } from './booking/screening-form/screening-form';
 import { SeatMap } from './booking/seat-map/seat-map';
 import { Purchase } from './booking/purchase/purchase';
+import { MyPurchases } from './booking/my-purchases/my-purchases';
 import { Login } from './login/login/login';
 import { Profile } from './login/profile/profile';
 import { Register } from './login/register/register';
@@ -27,6 +28,7 @@ export const routes: Routes = [
   { path: 'perfil', component: Profile, canActivate: [authGuard] },
   { path: 'funciones/:screeningId', component: SeatMap },
   { path: 'compra/:screeningId', component: Purchase },
+  { path: 'mis-compras', component: MyPurchases, canActivate: [authGuard] },
   {
     path: 'empleado/validar',
     loadComponent: () => import('./validation/validate/validate').then((m) => m.Validate),

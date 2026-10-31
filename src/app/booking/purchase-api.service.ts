@@ -8,6 +8,7 @@ export interface PurchaseInput {
   total: number;
   couponPct: number;
   items: { label: string; price: number }[];
+  creditUsed: number;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -27,6 +28,18 @@ export class PurchaseApi {
         input.items.map((item) => ({ purchase_id: data, label: item.label, price: item.price })),
       );
       if (itemsError) throw new Error(itemsError.message);
+    }
+    if (input.userId && input.creditUsed > 0) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('credit')
+        .eq('id', input.userId)
+        .single();
+      const current = (profile as { credit: number } | null)?.credit ?? 0;
+      await supabase
+        .from('profiles')
+        .update({ credit: Math.max(0, current - input.creditUsed) })
+        .eq('id', input.userId);
     }
     return data as number;
   }

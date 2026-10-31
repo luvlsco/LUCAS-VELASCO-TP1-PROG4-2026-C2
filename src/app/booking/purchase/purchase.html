@@ -56,6 +56,17 @@
       <p><a routerLink="/login">Ingresá</a> para usar cupones.</p>
     }
 
+    @if (auth.session() && credit() > 0) {
+      <label>
+        <input
+          type="checkbox"
+          [checked]="useCredit()"
+          (change)="useCredit.set(!useCredit())"
+        />
+        Usar crédito (${{ credit() }})
+      </label>
+    }
+
     <p>Total: ${{ total() }}</p>
 
     @if (requiredAge() > 0) {

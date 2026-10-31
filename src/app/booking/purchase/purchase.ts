@@ -60,6 +60,8 @@ export class Purchase {
   });
 
   protected couponPct = signal(0);
+  protected credit = signal(0);
+  protected useCredit = signal(false);
   protected firstCouponPct = signal(0);
   protected seniorCoupons = signal<SeniorCoupon[]>([]);
   protected candyProducts = signal<CandyProduct[]>([]);
@@ -72,10 +74,15 @@ export class Purchase {
   protected purchaseId = signal<number | null>(null);
   protected qrUrl = signal<string | null>(null);
 
-  protected total = computed(
-    () =>
-      Math.round((this.subtotal() + candyTotal(this.candyItems())) * (1 - this.couponPct() / 100)),
+  protected discounted = computed(() =>
+    Math.round((this.subtotal() + candyTotal(this.candyItems())) * (1 - this.couponPct() / 100)),
   );
+
+  protected creditUsed = computed(() =>
+    this.useCredit() ? Math.min(this.credit(), this.discounted()) : 0,
+  );
+
+  protected total = computed(() => this.discounted() - this.creditUsed());
 
   protected candyItems = computed(() => {
     const selected = this.selectedCandy();
@@ -121,12 +128,13 @@ export class Purchase {
       if (!userId) return;
       void supabase
         .from('profiles')
-        .select('coupon_pct, first_coupon_used, birthdate')
+        .select('coupon_pct, first_coupon_used, birthdate, credit')
         .eq('id', userId)
         .single()
         .then(({ data }) => {
           if (!data) return;
           if (!data.first_coupon_used) this.firstCouponPct.set(data.coupon_pct ?? 0);
+          this.credit.set(data.credit ?? 0);
           if (data.birthdate) {
             this.profileBirthdate.set(data.birthdate);
             const age =
@@ -213,6 +221,7 @@ export class Purchase {
         total: this.lastTotal,
         couponPct: this.couponPct(),
         items: this.candyItems(),
+        creditUsed: this.creditUsed(),
       });
       this.booking.clearSelection();
       this.purchaseId.set(id);

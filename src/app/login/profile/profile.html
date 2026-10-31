@@ -9,7 +9,8 @@
 <button type="button" (click)="auth.signOut()">Cerrar sesión</button>
 <a routerLink="/">Volver</a>
 
-<h3>{{ points() }} puntos</h3>
+<h3>{{ points() }} puntos · ${{ profile()?.credit ?? 0 }} crédito</h3>
+<a routerLink="/mis-compras">Mis compras</a>
 
 <h3>Recompensas</h3>
 @for (r of rewards(); track r.id) {
