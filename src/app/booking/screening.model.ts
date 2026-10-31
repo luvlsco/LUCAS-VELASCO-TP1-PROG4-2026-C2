@@ -31,3 +31,7 @@ export function createEmptyScreeningDraft(): ScreeningDraft {
 export function canCancelAt(date: string, time: string, nowMs: number): boolean {
   return new Date(`${date}T${time}`).getTime() - nowMs > 2 * 3600000;
 }
+
+export function hoursUntil(date: string, time: string, nowMs: number): number {
+  return (new Date(`${date}T${time}`).getTime() - nowMs) / 3600000;
+}

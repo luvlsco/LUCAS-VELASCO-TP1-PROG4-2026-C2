@@ -12,6 +12,13 @@
 <h3>{{ points() }} puntos · ${{ profile()?.credit ?? 0 }} crédito</h3>
 <a routerLink="/mis-compras">Mis compras</a>
 
+<h3>Próximas funciones</h3>
+@for (u of upcoming(); track u.purchaseId) {
+  <p>Recordatorio: tu función es en {{ u.hours }} h — {{ u.text }}</p>
+} @empty {
+  <p>Sin funciones próximas (48 h).</p>
+}
+
 <h3>Recompensas</h3>
 @for (r of rewards(); track r.id) {
   <article>
