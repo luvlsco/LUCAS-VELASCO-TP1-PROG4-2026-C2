@@ -18,6 +18,28 @@
     }
     <p>Subtotal: ${{ subtotal() }}</p>
 
+    <h3>Candy Bar</h3>
+    @for (c of combos(); track c.id) {
+      <label>
+        <input
+          type="checkbox"
+          [checked]="selectedCandy().includes('c' + c.id)"
+          (change)="toggleCandy('c' + c.id)"
+        />
+        Combo {{ c.name }} · ${{ c.price }} ({{ c.items }})
+      </label>
+    }
+    @for (p of candyProducts(); track p.id) {
+      <label>
+        <input
+          type="checkbox"
+          [checked]="selectedCandy().includes('p' + p.id)"
+          (change)="toggleCandy('p' + p.id)"
+        />
+        {{ p.name }} · ${{ p.price }}
+      </label>
+    }
+
     @if (auth.session()) {
       @if (firstCouponPct() > 0) {
         <button type="button" (click)="useFirstCoupon()">
@@ -32,6 +54,17 @@
       }
     } @else {
       <p><a routerLink="/login">Ingresá</a> para usar cupones.</p>
+    }
+
+    @if (auth.session() && credit() > 0) {
+      <label>
+        <input
+          type="checkbox"
+          [checked]="useCredit()"
+          (change)="useCredit.set(!useCredit())"
+        />
+        Usar crédito (${{ credit() }})
+      </label>
     }
 
     <p>Total: ${{ total() }}</p>

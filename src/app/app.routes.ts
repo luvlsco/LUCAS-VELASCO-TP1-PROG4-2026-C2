@@ -10,9 +10,11 @@ import { ScreeningAdmin } from './booking/screening-admin/screening-admin';
 import { ScreeningForm } from './booking/screening-form/screening-form';
 import { SeatMap } from './booking/seat-map/seat-map';
 import { Purchase } from './booking/purchase/purchase';
+import { MyPurchases } from './booking/my-purchases/my-purchases';
 import { Login } from './login/login/login';
 import { Profile } from './login/profile/profile';
 import { Register } from './login/register/register';
+import { CandyAdmin } from './candy/candy-admin/candy-admin';
 import { authGuard, employeeGuard, guestGuard } from './guard/auth-guard';
 
 export const routes: Routes = [
@@ -26,6 +28,7 @@ export const routes: Routes = [
   { path: 'perfil', component: Profile, canActivate: [authGuard] },
   { path: 'funciones/:screeningId', component: SeatMap },
   { path: 'compra/:screeningId', component: Purchase },
+  { path: 'mis-compras', component: MyPurchases, canActivate: [authGuard] },
   {
     path: 'empleado/validar',
     loadComponent: () => import('./validation/validate/validate').then((m) => m.Validate),
@@ -37,4 +40,5 @@ export const routes: Routes = [
   { path: 'admin/peliculas', component: MovieAdmin, canActivate: [authGuard] },
   { path: 'admin/peliculas/nueva', component: MovieForm, canActivate: [authGuard] },
   { path: 'admin/peliculas/:movieId/editar', component: MovieForm, canActivate: [authGuard] },
+  { path: 'admin/candy', component: CandyAdmin, canActivate: [authGuard] },
 ];

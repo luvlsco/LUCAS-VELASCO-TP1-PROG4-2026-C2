@@ -1,0 +1,18 @@
+<h2>Mis compras</h2>
+
+@for (p of purchases(); track p.id) {
+  <article>
+    <h3>Compra {{ p.id }} · ${{ p.total }} · {{ p.status }}</h3>
+    <p>Función: {{ screeningOf(p.screening_id) }}</p>
+    @if (p.status !== 'cancelada' && canCancel(p.screening_id)) {
+      <button type="button" (click)="cancel(p)">Cancelar (genera crédito)</button>
+    }
+  </article>
+} @empty {
+  <p>Sin compras.</p>
+}
+
+@if (error(); as message) {
+  <p class="error" role="alert">{{ message }}</p>
+}
+<a routerLink="/perfil">Volver al perfil</a>

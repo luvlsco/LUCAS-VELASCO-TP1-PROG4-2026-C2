@@ -27,3 +27,11 @@ export interface ScreeningSlot {
 export function createEmptyScreeningDraft(): ScreeningDraft {
   return { movieId: 0, roomId: 0, date: '', time: '', format: '2D', language: 'castellano' };
 }
+
+export function canCancelAt(date: string, time: string, nowMs: number): boolean {
+  return new Date(`${date}T${time}`).getTime() - nowMs > 2 * 3600000;
+}
+
+export function hoursUntil(date: string, time: string, nowMs: number): number {
+  return (new Date(`${date}T${time}`).getTime() - nowMs) / 3600000;
+}

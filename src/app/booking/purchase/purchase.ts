@@ -6,6 +6,7 @@ import { BookingStore } from '../../services/booking-store';
 import { CatalogStore } from '../../services/catalog-store';
 import { PurchaseApi } from '../purchase-api.service';
 import { QrService } from '../qr.service';
+import { CandyProduct, Combo, candyTotal } from '../../candy/candy.model';
 import { areContiguous, buildRoomSeats, seatPrice, seatId } from '../seat.model';
 
 interface SeniorCoupon {
@@ -59,8 +60,13 @@ export class Purchase {
   });
 
   protected couponPct = signal(0);
+  protected credit = signal(0);
+  protected useCredit = signal(false);
   protected firstCouponPct = signal(0);
   protected seniorCoupons = signal<SeniorCoupon[]>([]);
+  protected candyProducts = signal<CandyProduct[]>([]);
+  protected combos = signal<Combo[]>([]);
+  protected selectedCandy = signal<string[]>([]);
   protected profileBirthdate = signal<string | null>(null);
   protected manualBirthdate = signal('');
   protected saving = signal(false);
@@ -68,7 +74,25 @@ export class Purchase {
   protected purchaseId = signal<number | null>(null);
   protected qrUrl = signal<string | null>(null);
 
-  protected total = computed(() => Math.round(this.subtotal() * (1 - this.couponPct() / 100)));
+  protected discounted = computed(() =>
+    Math.round((this.subtotal() + candyTotal(this.candyItems())) * (1 - this.couponPct() / 100)),
+  );
+
+  protected creditUsed = computed(() =>
+    this.useCredit() ? Math.min(this.credit(), this.discounted()) : 0,
+  );
+
+  protected total = computed(() => this.discounted() - this.creditUsed());
+
+  protected candyItems = computed(() => {
+    const selected = this.selectedCandy();
+    const products = this.candyProducts().filter((p) => selected.includes(`p${p.id}`));
+    const combos = this.combos().filter((c) => selected.includes(`c${c.id}`));
+    return [
+      ...combos.map((c) => ({ label: c.name, price: c.price })),
+      ...products.map((p) => ({ label: p.name, price: p.price })),
+    ];
+  });
 
   protected requiredAge = computed(() => {
     const rating = this.movie()?.ageRating;
@@ -89,17 +113,28 @@ export class Purchase {
   });
 
   constructor() {
+    void supabase
+      .from('candy_products')
+      .select('id, name, price, category_id')
+      .order('name')
+      .then(({ data }) => this.candyProducts.set((data as CandyProduct[]) ?? []));
+    void supabase
+      .from('combos')
+      .select('id, name, price, items')
+      .order('name')
+      .then(({ data }) => this.combos.set((data as Combo[]) ?? []));
     effect(() => {
       const userId = this.auth.session()?.user.id;
       if (!userId) return;
       void supabase
         .from('profiles')
-        .select('coupon_pct, first_coupon_used, birthdate')
+        .select('coupon_pct, first_coupon_used, birthdate, credit')
         .eq('id', userId)
         .single()
         .then(({ data }) => {
           if (!data) return;
           if (!data.first_coupon_used) this.firstCouponPct.set(data.coupon_pct ?? 0);
+          this.credit.set(data.credit ?? 0);
           if (data.birthdate) {
             this.profileBirthdate.set(data.birthdate);
             const age =
@@ -132,7 +167,7 @@ export class Purchase {
         time: s.time,
         room: this.booking.roomName(s.roomId),
         format: s.format,
-        seats: this.confirmedSeats(),
+        seats: [...this.confirmedSeats(), ...this.lastCandy],
         total: this.confirmedTotal(),
         adultNotice: this.requiredAge() > 0,
       },
@@ -146,6 +181,7 @@ export class Purchase {
 
   private lastSeats: { id: string; price: number }[] = [];
   private lastTotal = 0;
+  private lastCandy: { id: string; price: number }[] = [];
 
   protected confirmedTotal(): number {
     return this.lastTotal;
@@ -153,6 +189,12 @@ export class Purchase {
 
   protected useSeniorCoupon(pct: number): void {
     this.couponPct.set(pct);
+  }
+
+  protected toggleCandy(key: string): void {
+    this.selectedCandy.update((list) =>
+      list.includes(key) ? list.filter((k) => k !== key) : [...list, key],
+    );
   }
 
   protected setBirthdate(value: string): void {
@@ -171,12 +213,15 @@ export class Purchase {
     try {
       this.lastSeats = this.seats();
       this.lastTotal = this.total();
+      this.lastCandy = this.candyItems().map((item) => ({ id: item.label, price: item.price }));
       const id = await this.api.create({
         userId: this.auth.session()?.user.id ?? null,
         screeningId: s.id,
         seats: this.lastSeats,
         total: this.lastTotal,
         couponPct: this.couponPct(),
+        items: this.candyItems(),
+        creditUsed: this.creditUsed(),
       });
       this.booking.clearSelection();
       this.purchaseId.set(id);

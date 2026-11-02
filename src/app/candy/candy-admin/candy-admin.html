@@ -1,0 +1,121 @@
+<h2>Candy Bar</h2>
+
+<h3>Categorías</h3>
+@for (c of categories(); track c.id) {
+  <p>{{ c.name }}</p>
+} @empty {
+  <p>Sin categorías.</p>
+}
+<input
+  placeholder="Nueva categoría"
+  [value]="categoryName()"
+  (input)="setCategoryName($any($event.target).value)"
+/>
+<button type="button" (click)="addCategory()">Agregar categoría</button>
+
+<h3>Productos</h3>
+@for (p of products(); track p.id) {
+  <article>
+    <h4>{{ p.name }} · ${{ p.price }}</h4>
+    <p>{{ categoryNameOf(p.category_id) }}</p>
+    <button type="button" (click)="removeProduct(p.id)">Borrar</button>
+  </article>
+} @empty {
+  <p>Sin productos.</p>
+}
+
+<h3>Nuevo producto</h3>
+<form [formRoot]="productForm" (submit)="$event.preventDefault(); addProduct()">
+  <label for="name">Nombre</label>
+  <input id="name" [value]="draft().name" (input)="setField('name', $any($event.target).value)" />
+  @let fn = productForm.name();
+  @if (fn.touched() && !fn.valid()) {
+    @for (e of fn.errors(); track e.kind) {
+      <p class="error">{{ e.message }}</p>
+    }
+  }
+
+  <label for="price">Precio</label>
+  <input
+    id="price"
+    type="number"
+    [value]="draft().price"
+    (input)="setField('price', $any($event.target).value)"
+  />
+
+  <label for="category">Categoría</label>
+  <select
+    id="category"
+    [value]="draft().categoryId"
+    (change)="setField('categoryId', $any($event.target).value)"
+  >
+    <option [value]="0">Sin categoría</option>
+    @for (c of categories(); track c.id) {
+      <option [value]="c.id">{{ c.name }}</option>
+    }
+  </select>
+
+  @if (error(); as message) {
+    <p class="error" role="alert">{{ message }}</p>
+  }
+  <button type="submit">Agregar producto</button>
+</form>
+
+<h3>Combos</h3>
+@for (c of combos(); track c.id) {
+  <article>
+    <h4>{{ c.name }} · ${{ c.price }}</h4>
+    <p>{{ c.items }}</p>
+    <button type="button" (click)="removeCombo(c.id)">Borrar</button>
+  </article>
+} @empty {
+  <p>Sin combos.</p>
+}
+
+<h3>Nuevo combo</h3>
+<label for="comboName">Nombre</label>
+<input
+  id="comboName"
+  [value]="comboDraft().name"
+  (input)="setComboField('name', $any($event.target).value)"
+/>
+<label for="comboPrice">Precio fijo</label>
+<input
+  id="comboPrice"
+  type="number"
+  [value]="comboDraft().price"
+  (input)="setComboField('price', $any($event.target).value)"
+/>
+<label for="comboItems">Incluye</label>
+<input
+  id="comboItems"
+  [value]="comboDraft().items"
+  (input)="setComboField('items', $any($event.target).value)"
+/>
+<button type="button" (click)="addCombo()">Agregar combo</button>
+
+<h3>Recompensas</h3>
+@for (r of rewards(); track r.id) {
+  <article>
+    <h4>{{ r.label }} · {{ r.cost_points }} puntos</h4>
+    <button type="button" (click)="removeReward(r.id)">Borrar</button>
+  </article>
+} @empty {
+  <p>Sin recompensas.</p>
+}
+
+<h3>Nueva recompensa</h3>
+<label for="rewardLabel">Nombre</label>
+<input
+  id="rewardLabel"
+  [value]="rewardDraft().label"
+  (input)="setRewardField('label', $any($event.target).value)"
+/>
+<label for="rewardCost">Costo en puntos</label>
+<input
+  id="rewardCost"
+  type="number"
+  [value]="rewardDraft().costPoints"
+  (input)="setRewardField('costPoints', $any($event.target).value)"
+/>
+<button type="button" (click)="addReward()">Agregar recompensa</button>
